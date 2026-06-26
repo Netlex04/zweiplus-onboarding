@@ -1,0 +1,88 @@
+{
+  "key": "avv_onboarding",
+  "process_key": "datenschutz_basis_onboarding",
+  "name": "AVV-Onboarding",
+  "short_description": "Erfassung der Auftragsverarbeitung (AVV) gem. Art. 28 DSGVO inkl. Unterauftragsverarbeiter.",
+  "intro": {
+    "goal": "Erfassung der Auftragsverarbeitungsverhältnisse und der zugehörigen Verträge.",
+    "why": "Auftragsverarbeitungsverträge sind nach Art. 28 DSGVO verpflichtend, wenn Dienstleister personenbezogene Daten im Auftrag verarbeiten.",
+    "who": "Geschäftsführung, ggf. mit Unterstützung der IT.",
+    "effort": "Ca. 15–25 Minuten.",
+    "explainer": "Bitte geben Sie an, welche Dienstleister in Ihrem Auftrag personenbezogene Daten verarbeiten."
+  },
+  "responsible_role": "Geschäftsführung",
+  "estimated_effort": "15–25 Minuten",
+  "order_index": 2,
+  "unlock_rule": { "type": "after", "requires": ["software_inventory"] },
+  "ai_knowledge_config": {
+    "privacyKnowledge": [
+      "processor_controller_distinction",
+      "subprocessor_requirements",
+      "processing_subject_matter",
+      "processing_duration",
+      "data_subjects",
+      "data_categories",
+      "technical_organizational_measures"
+    ],
+    "internalKnowledge": [
+      "zweiplus_avv_review_guideline",
+      "dpms_avv_mapping_rules"
+    ]
+  },
+  "output_schema_key": "avv_onboarding_canonical_v1",
+  "target_mappings": ["dpms_v1"],
+  "steps": [
+    {
+      "key": "processor_relationship",
+      "title": "Auftragsverarbeitung",
+      "description": "Angaben zu Auftragsverarbeitern und bestehenden Verträgen.",
+      "order_index": 0,
+      "questions": [
+        {
+          "key": "has_processors",
+          "label": "Setzen Sie Dienstleister ein, die in Ihrem Auftrag personenbezogene Daten verarbeiten?",
+          "type": "single_select",
+          "required": true,
+          "options": ["ja", "nein", "unklar"],
+          "ai_help_enabled": true,
+          "knowledge_scope": ["processor_controller_distinction"],
+          "order_index": 0
+        },
+        {
+          "key": "processor_categories",
+          "label": "Für welche Kategorien von Dienstleistern bestehen Auftragsverarbeitungsverhältnisse?",
+          "type": "multi_select",
+          "required": false,
+          "options": [
+            "IT-/Hosting-Dienstleister",
+            "Cloud-Software (SaaS)",
+            "Lohn-/Buchhaltung",
+            "Marketing/CRM",
+            "Sonstige"
+          ],
+          "ai_help_enabled": true,
+          "knowledge_scope": ["subprocessor_requirements", "data_categories"],
+          "visibility_rule": { "questionKey": "has_processors", "equals": "ja" },
+          "order_index": 1
+        },
+        {
+          "key": "avv_notes",
+          "label": "Gibt es Besonderheiten zu den Auftragsverarbeitungsverträgen (z. B. fehlende Verträge, Unterauftragsverarbeiter)?",
+          "type": "text",
+          "required": false,
+          "ai_help_enabled": true,
+          "knowledge_scope": ["subprocessor_requirements"],
+          "order_index": 2
+        },
+        {
+          "key": "avv_document_upload",
+          "label": "Bitte laden Sie vorhandene Auftragsverarbeitungsverträge hoch.",
+          "type": "file_upload",
+          "required": false,
+          "validation_rules": { "allowedFileTypes": ["pdf", "docx"] },
+          "order_index": 3
+        }
+      ]
+    }
+  ]
+}

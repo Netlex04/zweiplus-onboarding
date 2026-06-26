@@ -7,7 +7,7 @@ Modulare, KI-gestützte Onboarding-Plattform für Datenschutzprozesse. Kunden be
 | Phase | Inhalt | Status |
 |-------|--------|--------|
 | 0/1 Doku & Planung | Architektur, Plan, OpenAPI, Design-System | ✅ |
-| 1 Backend-Fundament | Datenmodell, Migrationen, Seeds | ⏳ geplant |
+| 1 Backend-Fundament | Datenmodell, Migrationen, Seeds | ✅ |
 | 2 Backend-API & Validierung | REST, Statemachine, Backend-Validierung, Upload | ⏳ geplant |
 | 3 KI-Service | Provider-Seam (fake/Anthropic), Chat/Suggest/Validate | ⏳ geplant |
 | 4 Review & DPMS | Review, Canonical, DPMS-Adapter, Import | ⏳ geplant |

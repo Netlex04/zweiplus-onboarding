@@ -1,0 +1,86 @@
+{
+  "key": "tom_erfassung",
+  "process_key": "datenschutz_basis_onboarding",
+  "name": "TOM-Erfassung",
+  "short_description": "Erfassung der technischen und organisatorischen Maßnahmen (TOM) gem. Art. 32 DSGVO.",
+  "intro": {
+    "goal": "Dokumentation der technischen und organisatorischen Maßnahmen zum Schutz personenbezogener Daten.",
+    "why": "TOM sind nach Art. 32 DSGVO verpflichtend und Grundlage für Auftragsverarbeitungsverträge sowie das Verarbeitungsverzeichnis.",
+    "who": "IT-Verantwortliche in Abstimmung mit der Geschäftsführung.",
+    "effort": "Ca. 20–30 Minuten.",
+    "explainer": "Bitte beschreiben Sie, mit welchen Maßnahmen Sie Vertraulichkeit, Integrität und Verfügbarkeit der Daten sicherstellen."
+  },
+  "responsible_role": "IT-Verantwortlicher",
+  "estimated_effort": "20–30 Minuten",
+  "order_index": 1,
+  "unlock_rule": { "type": "after", "requires": ["software_inventory"] },
+  "ai_knowledge_config": {
+    "privacyKnowledge": [
+      "tom_basics",
+      "technical_organizational_measures",
+      "access_control",
+      "backup_and_recovery",
+      "encryption",
+      "logging",
+      "incident_response"
+    ],
+    "internalKnowledge": [
+      "zweiplus_tom_review_guideline",
+      "zweiplus_customer_question_style"
+    ],
+    "fieldKnowledge": [
+      "tom_security_measure_examples",
+      "tom_evidence_requirements"
+    ]
+  },
+  "output_schema_key": "tom_erfassung_canonical_v1",
+  "target_mappings": ["dpms_v1"],
+  "steps": [
+    {
+      "key": "access_and_protection",
+      "title": "Zugriff & Schutzmaßnahmen",
+      "description": "Angaben zu Zugriffskontrolle, Verschlüsselung und Datensicherung.",
+      "order_index": 0,
+      "ai_knowledge_config": {
+        "fieldKnowledge": ["tom_security_measure_examples", "tom_evidence_requirements"]
+      },
+      "questions": [
+        {
+          "key": "access_control_measures",
+          "label": "Welche Maßnahmen zur Zugriffskontrolle setzen Sie ein?",
+          "type": "multi_select",
+          "required": true,
+          "options": [
+            "Passwortrichtlinie",
+            "Zwei-Faktor-Authentifizierung",
+            "Rollen-/Rechtekonzept",
+            "Protokollierung von Zugriffen",
+            "Sonstige"
+          ],
+          "ai_help_enabled": true,
+          "knowledge_scope": ["access_control", "tom_basics"],
+          "order_index": 0
+        },
+        {
+          "key": "encryption_in_use",
+          "label": "Werden personenbezogene Daten verschlüsselt gespeichert oder übertragen?",
+          "type": "single_select",
+          "required": true,
+          "options": ["ja", "teilweise", "nein"],
+          "ai_help_enabled": true,
+          "knowledge_scope": ["encryption"],
+          "order_index": 1
+        },
+        {
+          "key": "backup_concept",
+          "label": "Bitte beschreiben Sie Ihr Datensicherungs- und Wiederherstellungskonzept.",
+          "type": "text",
+          "required": false,
+          "ai_help_enabled": true,
+          "knowledge_scope": ["backup_and_recovery"],
+          "order_index": 2
+        }
+      ]
+    }
+  ]
+}

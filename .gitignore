@@ -1,0 +1,31 @@
+# --- Python ---
+__pycache__/
+*.py[cod]
+*.egg-info/
+.pytest_cache/
+.mypy_cache/
+
+# Virtual environments
+venv/
+.venv/
+env/
+
+# --- Secrets / config ---
+.env
+*.env
+!.env.example
+
+# --- Local data ---
+*.db
+*.sqlite
+*.sqlite3
+backend/storage/
+
+# --- Node / frontend (ab Phase 5) ---
+node_modules/
+dist/
+
+# --- OS / editor ---
+.DS_Store
+.idea/
+.vscode/

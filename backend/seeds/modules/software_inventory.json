@@ -1,0 +1,114 @@
+{
+  "key": "software_inventory",
+  "process_key": "datenschutz_basis_onboarding",
+  "name": "Software-Erfassung",
+  "short_description": "Erfassung der eingesetzten Softwarelösungen und datenschutzrelevanten Systeme.",
+  "intro": {
+    "goal": "Erfassung der eingesetzten Softwarelösungen.",
+    "why": "Die Angaben werden benötigt, um datenschutzrelevante Systeme, Dienstleister und mögliche Auftragsverarbeitungen zu erkennen.",
+    "who": "IT-Verantwortliche oder Geschäftsführung.",
+    "effort": "Ca. 10–20 Minuten.",
+    "explainer": "Bitte geben Sie alle Systeme an, in denen personenbezogene Daten verarbeitet werden."
+  },
+  "responsible_role": "IT-Verantwortlicher",
+  "estimated_effort": "10–20 Minuten",
+  "order_index": 0,
+  "unlock_rule": { "type": "always" },
+  "ai_knowledge_config": {
+    "privacyKnowledge": [
+      "software_privacy_basics",
+      "processor_definitions",
+      "data_processing_systems",
+      "third_country_transfer_basics"
+    ],
+    "internalKnowledge": ["zweiplus_software_inventory_guideline"],
+    "targetSystemKnowledge": [
+      "dpms_software_mapping",
+      "dpms_subcontractor_mapping"
+    ]
+  },
+  "output_schema_key": "software_inventory_canonical_v1",
+  "target_mappings": ["dpms_v1"],
+  "steps": [
+    {
+      "key": "basic_information",
+      "title": "Grunddaten",
+      "description": "Bitte geben Sie an, welche Softwarelösungen verwendet werden.",
+      "order_index": 0,
+      "templates": [
+        {
+          "key": "software_vendor_email",
+          "type": "email",
+          "title": "E-Mail an Softwareanbieter",
+          "subject": "Rückfragen zum Datenschutz-Onboarding",
+          "body": "Sehr geehrte Damen und Herren,\n\nfür unser Datenschutz-Onboarding benötigen wir einige Angaben zu Ihrer Softwarelösung. Bitte teilen Sie uns mit, ob ein Auftragsverarbeitungsvertrag (AVV) vorliegt, in welchen Ländern die Daten verarbeitet werden und welche technisch-organisatorischen Maßnahmen Sie einsetzen.\n\nVielen Dank und freundliche Grüße"
+        },
+        {
+          "key": "software_vendor_questionnaire",
+          "type": "file",
+          "title": "Fragebogen Softwareanbieter",
+          "file_name": "fragebogen_softwareanbieter.docx",
+          "file_type": "docx"
+        }
+      ],
+      "questions": [
+        {
+          "key": "used_software",
+          "label": "Welche Softwarelösungen werden verwendet?",
+          "type": "multi_select",
+          "required": true,
+          "options": ["Microsoft 365", "DATEV", "Lexware", "HubSpot", "Sonstige"],
+          "ai_help_enabled": true,
+          "knowledge_scope": ["software_privacy_basics", "processor_definitions"],
+          "order_index": 0
+        },
+        {
+          "key": "additional_notes",
+          "label": "Gibt es weitere Hinweise zur Nutzung dieser Software?",
+          "type": "text",
+          "required": false,
+          "ai_help_enabled": true,
+          "order_index": 1
+        },
+        {
+          "key": "software_contract_upload",
+          "label": "Bitte laden Sie vorhandene Verträge oder Dokumente zur Software hoch.",
+          "type": "file_upload",
+          "required": false,
+          "validation_rules": { "allowedFileTypes": ["pdf", "docx", "png", "jpg"] },
+          "order_index": 2
+        }
+      ]
+    },
+    {
+      "key": "data_transfer",
+      "title": "Datenübermittlung",
+      "description": "Angaben zu möglichen Datenübermittlungen in Drittländer.",
+      "order_index": 1,
+      "ai_knowledge_config": {
+        "privacyKnowledge": ["third_country_transfer_basics"]
+      },
+      "questions": [
+        {
+          "key": "third_country",
+          "label": "Werden personenbezogene Daten in Drittländer (außerhalb EU/EWR) übertragen?",
+          "type": "single_select",
+          "required": true,
+          "options": ["ja", "nein", "unklar"],
+          "ai_help_enabled": true,
+          "knowledge_scope": ["third_country_transfer_basics"],
+          "order_index": 0
+        },
+        {
+          "key": "third_country_details",
+          "label": "In welche Länder werden die Daten übertragen und auf welcher Rechtsgrundlage?",
+          "type": "text",
+          "required": false,
+          "ai_help_enabled": true,
+          "visibility_rule": { "questionKey": "third_country", "equals": "ja" },
+          "order_index": 1
+        }
+      ]
+    }
+  ]
+}
