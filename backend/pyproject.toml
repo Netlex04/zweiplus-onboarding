@@ -1,0 +1,12 @@
+[project]
+name = "zweiplus-onboarding-backend"
+version = "0.1.0"
+description = "Backend for the Zweiplus modular privacy onboarding platform"
+requires-python = ">=3.11"
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = "-q"
+filterwarnings = [
+    "ignore::DeprecationWarning",
+]
