@@ -1,0 +1,755 @@
+openapi: 3.1.0
+info:
+  title: Zweiplus Onboarding-Plattform API
+  version: 0.1.0
+  description: >
+    Modulare KI-gestützte Onboarding-Plattform für Datenschutzprozesse.
+    Vertrag für das MVP. Geschützte Endpunkte erwarten `Authorization: Bearer <token>`.
+servers:
+  - url: http://localhost:8000
+    description: Lokale Entwicklung
+security:
+  - bearerAuth: []
+tags:
+  - name: auth
+  - name: definitions
+  - name: process
+  - name: module
+  - name: step
+  - name: files
+  - name: templates
+  - name: ai
+  - name: review
+  - name: import
+paths:
+  /api/auth/login:
+    post:
+      tags: [auth]
+      security: []
+      summary: Login, liefert Bearer-Token
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [email, password]
+              properties:
+                email: { type: string, format: email }
+                password: { type: string }
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  token: { type: string }
+                  role: { $ref: "#/components/schemas/Role" }
+                  name: { type: string }
+        "401": { $ref: "#/components/responses/Error" }
+
+  /api/process-definitions:
+    get:
+      tags: [definitions]
+      summary: Verfügbare Prozessdefinitionen
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items: { $ref: "#/components/schemas/ProcessDefinition" }
+
+  /api/processes:
+    get:
+      tags: [process]
+      summary: Prozessinstanzen (reviewer/admin)
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items: { $ref: "#/components/schemas/ProcessSummary" }
+    post:
+      tags: [process]
+      summary: Onboarding-Prozess für einen Kunden anlegen
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [processDefKey, customerName]
+              properties:
+                processDefKey: { type: string }
+                customerName: { type: string }
+                customerOrg: { type: string }
+      responses:
+        "201":
+          description: Created
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/Dashboard" }
+
+  /api/processes/{id}:
+    get:
+      tags: [process]
+      summary: Dashboard-Daten einer Prozessinstanz
+      parameters:
+        - { name: id, in: path, required: true, schema: { type: string } }
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/Dashboard" }
+        "404": { $ref: "#/components/responses/Error" }
+
+  /api/modules/{moduleInstanceId}:
+    get:
+      tags: [module]
+      summary: Modul-Detail (Intro, Steps, Status, Vorlagen)
+      parameters:
+        - { name: moduleInstanceId, in: path, required: true, schema: { type: string } }
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/ModuleDetail" }
+
+  /api/modules/{moduleInstanceId}/canonical:
+    post:
+      tags: [import]
+      summary: Kanonischen Output für ein freigegebenes Modul erzeugen
+      parameters:
+        - { name: moduleInstanceId, in: path, required: true, schema: { type: string } }
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/CanonicalOutput" }
+
+  /api/modules/{moduleInstanceId}/import-preview:
+    post:
+      tags: [import]
+      summary: Importvorschau für ein Zielsystem
+      parameters:
+        - { name: moduleInstanceId, in: path, required: true, schema: { type: string } }
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                targetSystem: { type: string, default: dpms_v1 }
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/ImportPreview" }
+
+  /api/steps/{stepInstanceId}:
+    get:
+      tags: [step]
+      summary: Step-Detail mit Fragen, Antworten, Sichtbarkeit
+      parameters:
+        - { name: stepInstanceId, in: path, required: true, schema: { type: string } }
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/StepDetail" }
+
+  /api/steps/{stepInstanceId}/answers:
+    put:
+      tags: [step]
+      summary: Antworten speichern + Backend-Validierung ausführen
+      parameters:
+        - { name: stepInstanceId, in: path, required: true, schema: { type: string } }
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [answers]
+              properties:
+                answers:
+                  type: array
+                  items:
+                    type: object
+                    required: [questionKey, value]
+                    properties:
+                      questionKey: { type: string }
+                      value: {}
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  stepStatus: { $ref: "#/components/schemas/StepStatus" }
+                  validation: { $ref: "#/components/schemas/BackendValidationResult" }
+
+  /api/steps/{stepInstanceId}/complete:
+    post:
+      tags: [step]
+      summary: Step als abgeschlossen markieren (nur wenn valide)
+      parameters:
+        - { name: stepInstanceId, in: path, required: true, schema: { type: string } }
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/StepDetail" }
+        "409": { $ref: "#/components/responses/Error" }
+
+  /api/uploads:
+    post:
+      tags: [files]
+      summary: Datei hochladen (Bild/Dokument)
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              required: [file, stepInstanceId, questionKey]
+              properties:
+                file: { type: string, format: binary }
+                stepInstanceId: { type: string }
+                questionKey: { type: string }
+      responses:
+        "201":
+          description: Created
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/FileUpload" }
+        "415": { $ref: "#/components/responses/Error" }
+
+  /api/uploads/{id}/download:
+    get:
+      tags: [files]
+      summary: Datei herunterladen
+      parameters:
+        - { name: id, in: path, required: true, schema: { type: string } }
+      responses:
+        "200": { description: Binärdatei }
+
+  /api/templates/{templateKey}:
+    get:
+      tags: [templates]
+      summary: Vorlage abrufen (E-Mail/Text mit gerenderten Platzhaltern)
+      parameters:
+        - { name: templateKey, in: path, required: true, schema: { type: string } }
+        - { name: moduleInstanceId, in: query, required: false, schema: { type: string } }
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/Template" }
+
+  /api/templates/{templateKey}/file:
+    get:
+      tags: [templates]
+      summary: Fragebogen-Datei herunterladen
+      parameters:
+        - { name: templateKey, in: path, required: true, schema: { type: string } }
+      responses:
+        "200": { description: Binärdatei }
+
+  /api/ai/chat:
+    post:
+      tags: [ai]
+      summary: Kontextbezogener KI-Chat (dashboard/module/step/question)
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [context, message]
+              properties:
+                context: { type: string, enum: [dashboard, module, step, question] }
+                contextRef: { type: string, description: Instanz-/Frage-ID je Kontext }
+                message: { type: string }
+                history:
+                  type: array
+                  items:
+                    type: object
+                    properties:
+                      role: { type: string, enum: [user, assistant] }
+                      content: { type: string }
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  reply: { type: string }
+
+  /api/ai/suggest:
+    post:
+      tags: [ai]
+      summary: Strukturierten KI-Vorschlag erzeugen
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                stepInstanceId: { type: string }
+                questionKey: { type: string }
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/AiSuggestion" }
+
+  /api/ai/validate:
+    post:
+      tags: [ai]
+      summary: Semantische KI-Prüfung eines Steps
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [stepInstanceId]
+              properties:
+                stepInstanceId: { type: string }
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/AiValidationResult" }
+
+  /api/ai/analyze-document:
+    post:
+      tags: [ai]
+      summary: Hochgeladenes Dokument durch KI auswerten
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [uploadId]
+              properties:
+                uploadId: { type: string }
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/AiSuggestion" }
+
+  /api/review/tasks:
+    get:
+      tags: [review]
+      summary: Offene Review-Aufgaben (reviewer)
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items: { $ref: "#/components/schemas/ReviewTask" }
+
+  /api/review/modules/{moduleInstanceId}:
+    get:
+      tags: [review]
+      summary: Review-Ansicht (Antworten, KI-Vorschläge, Validierungen)
+      parameters:
+        - { name: moduleInstanceId, in: path, required: true, schema: { type: string } }
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/ReviewView" }
+
+  /api/review/modules/{moduleInstanceId}/approve:
+    post:
+      tags: [review]
+      summary: Modul freigeben
+      parameters:
+        - { name: moduleInstanceId, in: path, required: true, schema: { type: string } }
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/ModuleDetail" }
+
+  /api/review/modules/{moduleInstanceId}/request-changes:
+    post:
+      tags: [review]
+      summary: Modul zur Korrektur zurückgeben
+      parameters:
+        - { name: moduleInstanceId, in: path, required: true, schema: { type: string } }
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                notes: { type: string }
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/ModuleDetail" }
+
+  /api/review/answers/{answerId}:
+    patch:
+      tags: [review]
+      summary: Antwort durch Reviewer bearbeiten
+      parameters:
+        - { name: answerId, in: path, required: true, schema: { type: string } }
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [value]
+              properties:
+                value: {}
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/Answer" }
+
+  /api/import-jobs:
+    post:
+      tags: [import]
+      summary: Importjob anlegen (Mapping bereit)
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [moduleInstanceId]
+              properties:
+                moduleInstanceId: { type: string }
+                targetSystem: { type: string, default: dpms_v1 }
+      responses:
+        "201":
+          description: Created
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/ImportJob" }
+
+  /api/import-jobs/{id}/run:
+    post:
+      tags: [import]
+      summary: Import ausführen (simuliert)
+      parameters:
+        - { name: id, in: path, required: true, schema: { type: string } }
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/ImportJob" }
+
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+  responses:
+    Error:
+      description: Fehler
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              error: { type: string }
+              detail: { type: string }
+  schemas:
+    Role:
+      type: string
+      enum: [customer, reviewer, admin]
+    ModuleStatus:
+      type: string
+      enum: [locked, available, not_started, in_progress, waiting_customer, waiting_zweiplus, ai_check_pending, backend_validation_failed, completed, import_ready, imported]
+    StepStatus:
+      type: string
+      enum: [not_started, in_progress, incomplete, complete, ai_check_pending, backend_validation_failed, review_pending, completed]
+    ImportStatus:
+      type: string
+      enum: [not_prepared, mapping_ready, validated, approved, importing, imported, import_failed, reimport_required]
+    QuestionType:
+      type: string
+      enum: [single_select, multi_select, text, file_upload]
+    ProcessDefinition:
+      type: object
+      properties:
+        key: { type: string }
+        name: { type: string }
+        description: { type: string }
+        modules:
+          type: array
+          items: { $ref: "#/components/schemas/ModuleDefinitionSummary" }
+    ModuleDefinitionSummary:
+      type: object
+      properties:
+        key: { type: string }
+        name: { type: string }
+        shortDescription: { type: string }
+        responsibleRole: { type: string }
+        estimatedEffort: { type: string }
+    ProcessSummary:
+      type: object
+      properties:
+        id: { type: string }
+        customerName: { type: string }
+        customerOrg: { type: string }
+        status: { type: string }
+    Dashboard:
+      type: object
+      properties:
+        processInstanceId: { type: string }
+        customerName: { type: string }
+        overallProgress: { type: integer, description: 0-100 }
+        modules:
+          type: array
+          items: { $ref: "#/components/schemas/ModuleCard" }
+    ModuleCard:
+      type: object
+      properties:
+        moduleInstanceId: { type: string }
+        key: { type: string }
+        name: { type: string }
+        explainer: { type: string }
+        status: { $ref: "#/components/schemas/ModuleStatus" }
+        progress: { type: integer }
+        responsibleRole: { type: string }
+        estimatedEffort: { type: string }
+        locked: { type: boolean }
+        unlockHint: { type: string }
+        nextAction: { type: string }
+    ModuleDetail:
+      type: object
+      properties:
+        moduleInstanceId: { type: string }
+        key: { type: string }
+        name: { type: string }
+        intro:
+          type: object
+          properties:
+            goal: { type: string }
+            why: { type: string }
+            who: { type: string }
+            effort: { type: string }
+            explainer: { type: string }
+        status: { $ref: "#/components/schemas/ModuleStatus" }
+        progress: { type: integer }
+        steps:
+          type: array
+          items:
+            type: object
+            properties:
+              stepInstanceId: { type: string }
+              key: { type: string }
+              title: { type: string }
+              status: { $ref: "#/components/schemas/StepStatus" }
+        templates:
+          type: array
+          items: { $ref: "#/components/schemas/Template" }
+    StepDetail:
+      type: object
+      properties:
+        stepInstanceId: { type: string }
+        title: { type: string }
+        description: { type: string }
+        status: { $ref: "#/components/schemas/StepStatus" }
+        templates:
+          type: array
+          items: { $ref: "#/components/schemas/Template" }
+        questions:
+          type: array
+          items: { $ref: "#/components/schemas/Question" }
+    Question:
+      type: object
+      properties:
+        key: { type: string }
+        label: { type: string }
+        description: { type: string }
+        type: { $ref: "#/components/schemas/QuestionType" }
+        required: { type: boolean }
+        options:
+          type: array
+          items: { type: string }
+        helpText: { type: string }
+        aiHelpEnabled: { type: boolean }
+        visible: { type: boolean }
+        answer: { $ref: "#/components/schemas/Answer" }
+    Answer:
+      type: object
+      properties:
+        id: { type: string }
+        questionKey: { type: string }
+        value: {}
+        source: { type: string, enum: [user, ai, document, manual] }
+        aiSuggested: { type: boolean }
+        updatedAt: { type: string, format: date-time }
+    FileUpload:
+      type: object
+      properties:
+        id: { type: string }
+        originalName: { type: string }
+        contentType: { type: string }
+        sizeBytes: { type: integer }
+        questionKey: { type: string }
+    Template:
+      type: object
+      properties:
+        key: { type: string }
+        type: { type: string, enum: [email, file, text] }
+        title: { type: string }
+        subject: { type: string }
+        body: { type: string }
+        fileName: { type: string }
+        fileType: { type: string }
+    BackendValidationResult:
+      type: object
+      properties:
+        passed: { type: boolean }
+        errors:
+          type: array
+          items:
+            type: object
+            properties:
+              questionKey: { type: string }
+              code: { type: string }
+              message: { type: string }
+        warnings:
+          type: array
+          items:
+            type: object
+            properties:
+              questionKey: { type: string }
+              message: { type: string }
+    AiSuggestion:
+      type: object
+      properties:
+        id: { type: string }
+        suggestionType: { type: string }
+        moduleId: { type: string }
+        stepId: { type: string }
+        questionId: { type: string }
+        proposedValue: {}
+        confidence: { type: number }
+        requiresReview: { type: boolean }
+        openQuestions:
+          type: array
+          items: { type: string }
+        sourceUploadId: { type: string }
+    AiValidationResult:
+      type: object
+      properties:
+        id: { type: string }
+        passed: { type: boolean }
+        checks:
+          type: array
+          items:
+            type: object
+            properties:
+              question: { type: string }
+              ok: { type: boolean }
+              note: { type: string }
+        issues:
+          type: array
+          items: { type: string }
+    ReviewTask:
+      type: object
+      properties:
+        moduleInstanceId: { type: string }
+        customerName: { type: string }
+        moduleName: { type: string }
+        status: { type: string, enum: [open, in_review, changes_requested, approved] }
+    ReviewView:
+      type: object
+      properties:
+        moduleInstanceId: { type: string }
+        moduleName: { type: string }
+        moduleStatus: { $ref: "#/components/schemas/ModuleStatus" }
+        steps:
+          type: array
+          items:
+            type: object
+            properties:
+              title: { type: string }
+              questions:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    label: { type: string }
+                    answer: { $ref: "#/components/schemas/Answer" }
+                    aiSuggestions:
+                      type: array
+                      items: { $ref: "#/components/schemas/AiSuggestion" }
+              aiValidation: { $ref: "#/components/schemas/AiValidationResult" }
+              backendValidation: { $ref: "#/components/schemas/BackendValidationResult" }
+    CanonicalOutput:
+      type: object
+      properties:
+        moduleInstanceId: { type: string }
+        schemaKey: { type: string }
+        data: { type: object, additionalProperties: true }
+    ImportPreview:
+      type: object
+      properties:
+        targetSystem: { type: string }
+        mappedObjects:
+          type: array
+          items: { type: object, additionalProperties: true }
+        unmappedFields:
+          type: array
+          items: { type: string }
+        warnings:
+          type: array
+          items: { type: string }
+        errors:
+          type: array
+          items: { type: string }
+    ImportJob:
+      type: object
+      properties:
+        id: { type: string }
+        moduleInstanceId: { type: string }
+        targetSystem: { type: string }
+        status: { $ref: "#/components/schemas/ImportStatus" }
+        preview: { $ref: "#/components/schemas/ImportPreview" }
+        errors:
+          type: array
+          items: { type: string }
