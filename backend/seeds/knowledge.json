@@ -1,0 +1,164 @@
+[
+  {
+    "key": "software_privacy_basics",
+    "title": "Datenschutz bei Softwarelösungen",
+    "category": "privacy",
+    "content": "Jede Software, die personenbezogene Daten verarbeitet, ist datenschutzrechtlich relevant. Entscheidend sind Art der verarbeiteten Daten, Speicherort und beteiligte Dienstleister. Auch Standardsoftware kann eine Auftragsverarbeitung auslösen, wenn der Anbieter Zugriff auf personenbezogene Daten hat."
+  },
+  {
+    "key": "processor_definitions",
+    "title": "Auftragsverarbeiter – Begriff",
+    "category": "privacy",
+    "content": "Ein Auftragsverarbeiter verarbeitet personenbezogene Daten weisungsgebunden im Auftrag des Verantwortlichen (Art. 4 Nr. 8 DSGVO). Typische Beispiele sind Hosting-Anbieter, Cloud-Dienste und externe Dienstleister. Für solche Verhältnisse ist ein Auftragsverarbeitungsvertrag nach Art. 28 DSGVO erforderlich."
+  },
+  {
+    "key": "data_processing_systems",
+    "title": "Datenverarbeitende Systeme",
+    "category": "privacy",
+    "content": "Datenverarbeitende Systeme sind alle Anwendungen und Plattformen, in denen personenbezogene Daten erhoben, gespeichert oder verarbeitet werden. Eine vollständige Inventarisierung ist Grundlage für das Verarbeitungsverzeichnis und die Risikobewertung. Auch Schatten-IT und Einzelplatzlösungen sollten erfasst werden."
+  },
+  {
+    "key": "third_country_transfer_basics",
+    "title": "Drittlandübermittlung – Grundlagen",
+    "category": "privacy",
+    "content": "Eine Drittlandübermittlung liegt vor, wenn personenbezogene Daten außerhalb der EU/des EWR verarbeitet werden. Sie ist nur unter zusätzlichen Garantien zulässig, etwa Angemessenheitsbeschluss, Standardvertragsklauseln oder verbindliche interne Datenschutzvorschriften. Auch der Zugriff aus einem Drittland (z. B. Support) gilt als Übermittlung."
+  },
+  {
+    "key": "zweiplus_software_inventory_guideline",
+    "title": "Zweiplus-Leitlinie Software-Erfassung",
+    "category": "internal",
+    "content": "Bei der Software-Erfassung erfasst Zweiplus zunächst alle Systeme mit Personenbezug, unabhängig von der Kritikalität. Für jedes System wird geprüft, ob ein AVV vorliegt und ob eine Drittlandübermittlung stattfindet. Unklare Angaben werden im Review gezielt nachgefragt."
+  },
+  {
+    "key": "dpms_software_mapping",
+    "title": "DPMS-Mapping: Software",
+    "category": "target_system",
+    "content": "Im DPMS werden Softwarelösungen als Verarbeitungstätigkeiten bzw. Systeme abgebildet. Jede Software wird mit Anbieter, Zweck und Datenkategorien verknüpft. Felder ohne eindeutige Quelle werden im Mapping als ungemappt markiert und im Review ergänzt."
+  },
+  {
+    "key": "dpms_subcontractor_mapping",
+    "title": "DPMS-Mapping: Unterauftragsverarbeiter",
+    "category": "target_system",
+    "content": "Unterauftragsverarbeiter werden im DPMS dem jeweiligen Auftragsverarbeiter zugeordnet. Erforderlich sind Name, Sitzland und Verarbeitungszweck. Fehlt das Sitzland, kann die Drittlandprüfung im Zielsystem nicht automatisch erfolgen."
+  },
+  {
+    "key": "tom_basics",
+    "title": "Technische und organisatorische Maßnahmen – Grundlagen",
+    "category": "privacy",
+    "content": "Technische und organisatorische Maßnahmen (TOM) schützen personenbezogene Daten nach Art. 32 DSGVO. Sie sichern Vertraulichkeit, Integrität, Verfügbarkeit und Belastbarkeit der Verarbeitung. Die Maßnahmen müssen dem Risiko der Verarbeitung angemessen sein und regelmäßig überprüft werden."
+  },
+  {
+    "key": "technical_organizational_measures",
+    "title": "Kategorien technisch-organisatorischer Maßnahmen",
+    "category": "privacy",
+    "content": "TOM gliedern sich üblicherweise in Zutritts-, Zugangs-, Zugriffs-, Weitergabe-, Eingabe-, Auftrags-, Verfügbarkeits- und Trennungskontrolle. Für jede Kategorie sollten konkrete, nachweisbare Maßnahmen benannt werden. Allgemeine Aussagen ohne Bezug zur tatsächlichen Umsetzung sind unzureichend."
+  },
+  {
+    "key": "access_control",
+    "title": "Zugriffskontrolle",
+    "category": "privacy",
+    "content": "Zugriffskontrolle stellt sicher, dass nur berechtigte Personen auf personenbezogene Daten zugreifen können. Wichtige Maßnahmen sind ein Rollen- und Rechtekonzept, starke Authentifizierung (z. B. Zwei-Faktor) und die Protokollierung von Zugriffen. Berechtigungen sollten nach dem Prinzip der minimalen Rechte vergeben werden."
+  },
+  {
+    "key": "backup_and_recovery",
+    "title": "Datensicherung und Wiederherstellung",
+    "category": "privacy",
+    "content": "Ein Backup- und Wiederherstellungskonzept sichert die Verfügbarkeit personenbezogener Daten. Empfehlenswert sind regelmäßige, getestete Backups, eine räumlich getrennte Aufbewahrung und definierte Wiederherstellungszeiten. Nur getestete Backups bieten verlässlichen Schutz vor Datenverlust."
+  },
+  {
+    "key": "encryption",
+    "title": "Verschlüsselung",
+    "category": "privacy",
+    "content": "Verschlüsselung schützt Daten bei Speicherung und Übertragung vor unbefugtem Zugriff. Empfohlen werden Transportverschlüsselung (z. B. TLS) und Verschlüsselung ruhender Daten (z. B. Festplatten, Datenbanken). Eine sichere Schlüsselverwaltung ist Voraussetzung für die Wirksamkeit der Maßnahme."
+  },
+  {
+    "key": "logging",
+    "title": "Protokollierung",
+    "category": "privacy",
+    "content": "Protokollierung dokumentiert sicherheitsrelevante Ereignisse und Zugriffe auf personenbezogene Daten. Sie unterstützt die Nachvollziehbarkeit und die Erkennung von Sicherheitsvorfällen. Protokolldaten sind selbst schützenswert und unterliegen Speicherbegrenzung und Zugriffsschutz."
+  },
+  {
+    "key": "incident_response",
+    "title": "Reaktion auf Datenschutzvorfälle",
+    "category": "privacy",
+    "content": "Ein Incident-Response-Prozess regelt die Erkennung, Meldung und Behebung von Datenschutzverletzungen. Meldepflichtige Vorfälle sind innerhalb von 72 Stunden an die Aufsichtsbehörde zu melden (Art. 33 DSGVO). Klare Verantwortlichkeiten und dokumentierte Abläufe verkürzen die Reaktionszeit."
+  },
+  {
+    "key": "zweiplus_tom_review_guideline",
+    "title": "Zweiplus-Leitlinie TOM-Review",
+    "category": "internal",
+    "content": "Im TOM-Review prüft Zweiplus, ob die genannten Maßnahmen konkret, nachweisbar und zum Risiko der Verarbeitung passend sind. Pauschale Angaben werden zurückgewiesen und mit Beispielen erläutert. Fehlende Nachweise werden als Auflage dokumentiert."
+  },
+  {
+    "key": "zweiplus_customer_question_style",
+    "title": "Zweiplus-Fragestil gegenüber Kunden",
+    "category": "internal",
+    "content": "Fragen an Kunden werden verständlich, ohne unnötiges Fachvokabular und mit konkretem Beispiel formuliert. Ziel ist eine präzise Antwort ohne Überforderung. Bei unklaren Antworten wird freundlich und gezielt nachgefragt."
+  },
+  {
+    "key": "tom_security_measure_examples",
+    "title": "Beispiele für Sicherheitsmaßnahmen",
+    "category": "field",
+    "content": "Beispiele konkreter Maßnahmen sind: Zwei-Faktor-Authentifizierung für Administratorzugänge, automatische Bildschirmsperre, verschlüsselte Backups, getrennte Test- und Produktivumgebungen sowie regelmäßige Sicherheitsupdates. Beispiele helfen Kunden, die geforderte Detailtiefe zu treffen."
+  },
+  {
+    "key": "tom_evidence_requirements",
+    "title": "Nachweisanforderungen für TOM",
+    "category": "field",
+    "content": "Für TOM sollten Nachweise wie Richtlinien, Screenshots von Konfigurationen oder Verträge vorhanden sein. Im Review wird geprüft, ob die beschriebenen Maßnahmen belegbar sind. Reine Absichtserklärungen ohne Umsetzung gelten nicht als Nachweis."
+  },
+  {
+    "key": "processor_controller_distinction",
+    "title": "Verantwortlicher vs. Auftragsverarbeiter",
+    "category": "privacy",
+    "content": "Der Verantwortliche entscheidet über Zwecke und Mittel der Verarbeitung, der Auftragsverarbeiter handelt weisungsgebunden. Die korrekte Einordnung bestimmt die vertraglichen Pflichten. Gemeinsame Verantwortlichkeit (Art. 26 DSGVO) ist von der Auftragsverarbeitung abzugrenzen."
+  },
+  {
+    "key": "subprocessor_requirements",
+    "title": "Anforderungen an Unterauftragsverarbeiter",
+    "category": "privacy",
+    "content": "Setzt ein Auftragsverarbeiter Unterauftragsverarbeiter ein, bedarf dies der Genehmigung des Verantwortlichen und gleichwertiger vertraglicher Pflichten. Eine aktuelle Liste der Unterauftragsverarbeiter ist zu führen. Änderungen sind dem Verantwortlichen anzuzeigen, damit er widersprechen kann."
+  },
+  {
+    "key": "processing_subject_matter",
+    "title": "Gegenstand der Verarbeitung",
+    "category": "privacy",
+    "content": "Der Gegenstand der Verarbeitung beschreibt, was im Auftrag konkret verarbeitet wird, etwa Buchhaltung, Newsletter-Versand oder Hosting. Er ist Pflichtbestandteil eines AVV nach Art. 28 Abs. 3 DSGVO. Eine präzise Beschreibung erleichtert die spätere Zuordnung im Verarbeitungsverzeichnis."
+  },
+  {
+    "key": "processing_duration",
+    "title": "Dauer der Verarbeitung",
+    "category": "privacy",
+    "content": "Die Dauer der Verarbeitung gibt an, wie lange Daten im Auftrag verarbeitet werden, häufig für die Laufzeit des Vertrags. Sie ist im AVV anzugeben und wirkt sich auf Löschfristen aus. Nach Auftragsende sind Daten zu löschen oder zurückzugeben."
+  },
+  {
+    "key": "data_subjects",
+    "title": "Betroffene Personen",
+    "category": "privacy",
+    "content": "Betroffene Personen sind die natürlichen Personen, deren Daten verarbeitet werden, etwa Kunden, Beschäftigte oder Interessenten. Ihre Kategorien sind im AVV und im Verarbeitungsverzeichnis anzugeben. Die Kategorie beeinflusst die Risikobewertung der Verarbeitung."
+  },
+  {
+    "key": "data_categories",
+    "title": "Datenkategorien",
+    "category": "privacy",
+    "content": "Datenkategorien beschreiben die Arten verarbeiteter personenbezogener Daten, etwa Kontaktdaten, Vertragsdaten oder besondere Kategorien nach Art. 9 DSGVO. Besondere Kategorien (z. B. Gesundheitsdaten) erfordern erhöhte Schutzmaßnahmen. Eine genaue Angabe ist Grundlage für die Risikobeurteilung."
+  },
+  {
+    "key": "zweiplus_avv_review_guideline",
+    "title": "Zweiplus-Leitlinie AVV-Review",
+    "category": "internal",
+    "content": "Im AVV-Review prüft Zweiplus Vollständigkeit der Pflichtangaben nach Art. 28 DSGVO sowie das Vorliegen unterschriebener Verträge. Fehlende AVV werden als Maßnahme priorisiert. Unterauftragsverarbeiter werden auf Drittlandbezug geprüft."
+  },
+  {
+    "key": "dpms_avv_mapping_rules",
+    "title": "DPMS-Mappingregeln: AVV",
+    "category": "target_system",
+    "content": "Im DPMS werden AVV als Auftragsverarbeitungs-Datensätze mit Dienstleister, Gegenstand, Datenkategorien und betroffenen Personen abgebildet. Pflichtfelder ohne Quelle werden als ungemappt markiert. Drittlandbezug steuert zusätzliche Pflichtfelder im Zielsystem."
+  },
+  {
+    "key": "retention_period_basics",
+    "title": "Aufbewahrung und Löschfristen – Grundlagen",
+    "category": "privacy",
+    "content": "Personenbezogene Daten dürfen nur so lange gespeichert werden, wie es für den Zweck erforderlich ist oder gesetzliche Aufbewahrungspflichten bestehen. Zu unterscheiden sind gesetzliche Aufbewahrung, interne Löschfrist und tatsächliche Löschroutine. Ein Löschkonzept legt fest, wann und wie Daten gelöscht werden."
+  }
+]

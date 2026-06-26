@@ -1,0 +1,20 @@
+[
+  {
+    "email": "kunde@demo.test",
+    "name": "Demo Kunde",
+    "role": "customer",
+    "password": "demo1234"
+  },
+  {
+    "email": "review@zweiplus.test",
+    "name": "Demo Reviewer",
+    "role": "reviewer",
+    "password": "demo1234"
+  },
+  {
+    "email": "admin@zweiplus.test",
+    "name": "Demo Admin",
+    "role": "admin",
+    "password": "demo1234"
+  }
+]
