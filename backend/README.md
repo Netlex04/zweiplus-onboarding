@@ -1,9 +1,10 @@
 # Backend — Zweiplus Onboarding
 
 FastAPI + SQLAlchemy 2.x + Alembic backend for the modular privacy onboarding
-platform. **Phase 1 (Backend-Fundament):** data model, persistence,
-configuration and idempotent seeds. REST endpoints, validation, AI and review
-follow in later phases.
+platform. **Phase 1:** data model, persistence, configuration, idempotent seeds.
+**Phase 2:** REST API (auth, processes/dashboard, modules, steps, uploads,
+templates), the module engine (unlock/progress/state machine) and the binding
+backend validation service. AI and review follow in later phases.
 
 ## Stack
 
@@ -91,19 +92,58 @@ backend/
   app/
     config.py          # Settings (pydantic-settings)
     security.py        # bcrypt password hashing
-    main.py            # FastAPI app, /api/health, startup seed hook
+    auth.py            # JWT issue/decode + current_user / require_role deps
+    main.py            # FastAPI app, routers, unified {error,detail} handlers
     db/                # Base, engine, get_session(), session_scope()
     models/            # enums + Definition/Instance ORM models
+    schemas/           # Pydantic v2 request/response models (camelCase aliases)
+    api/               # routers: auth, definitions, processes, modules, steps,
+                       #          uploads, templates  (+ deps.py access checks)
+    services/          # statemachine, module_engine, validation, step_service,
+                       #          templates, dto
+    providers/         # storage.py  (FileStorage ABC + LocalFileStorage seam)
     seeds/loader.py    # idempotent seed loader
   seeds/               # JSON seed data (process, modules, knowledge, users)
   alembic/             # migration environment + versions
   tests/               # pytest suite
 ```
 
-## For Phase 2
+## API & Auth (Phase 2)
+
+Bearer-token auth (HS256 JWT signed with `JWT_SECRET`). Log in, then send
+`Authorization: Bearer <token>` on every protected endpoint. Roles: `customer`,
+`reviewer`, `admin`. A customer may only access their own process (matched on
+`customerName == user.name`).
+
+| Method & path | Role | Purpose |
+|---------------|------|---------|
+| `POST /api/auth/login` | public | Email/password → `{token, role, name}` |
+| `GET  /api/process-definitions` | any auth | Seeded process definitions |
+| `POST /api/processes` | any auth | Create process + module/step instances → Dashboard |
+| `GET  /api/processes` | reviewer/admin | List process instances |
+| `GET  /api/processes/{id}` | owner/staff | Dashboard DTO (ModuleCards + overallProgress) |
+| `GET  /api/modules/{moduleInstanceId}` | owner/staff | Module detail (intro, steps, templates) |
+| `GET  /api/steps/{stepInstanceId}` | owner/staff | Questions + answers + per-question visibility |
+| `PUT  /api/steps/{stepInstanceId}/answers` | owner/staff | Save answers, validate → `{stepStatus, validation}` |
+| `POST /api/steps/{stepInstanceId}/complete` | owner/staff | Complete step (200) or 409 if invalid |
+| `POST /api/uploads` | owner/staff | Multipart upload (type/size whitelist, 415 on bad type) |
+| `GET  /api/uploads/{id}/download` | owner/staff | Download a stored file |
+| `GET  /api/templates/{key}` | any auth | Rendered email/text template (placeholders) |
+| `GET  /api/templates/{key}/file` | any auth | Template file (generated placeholder) |
+
+Upload whitelist (Annahme A6): `pdf, docx, xlsx, png, jpg, jpeg`, max `MAX_UPLOAD_MB`.
+
+### Quick start (fresh SQLite)
+
+```bash
+DATABASE_URL="sqlite:///./dev.db" alembic upgrade head   # create schema
+DATABASE_URL="sqlite:///./dev.db" uvicorn app.main:app   # seeds load on startup
+```
+
+## For later phases (consumable seams)
 
 ```python
-from app.models import (              # all ORM entities + enums
+from app.models import (              # all ORM entities + enums (Phase 1)
     ProcessDefinition, ModuleDefinition, StepDefinition, QuestionDefinition,
     TemplateDefinition, KnowledgeEntry, User,
     ProcessInstance, ModuleInstance, StepInstance, Answer, FileUpload,
@@ -112,7 +152,18 @@ from app.models import (              # all ORM entities + enums
     ModuleStatus, StepStatus, ImportStatus, QuestionType, Role,
     AnswerSource, ReviewStatus,
 )
-from app.db import get_session, session_scope   # FastAPI dependency / script scope
+from app.db import get_session, session_scope
 from app.config import get_settings, Settings
 from app.security import hash_password, verify_password
+
+# Phase 2 services (reusable by Phase 3/4):
+from app.auth import current_user, require_role, create_access_token
+from app.services import module_engine          # create_process_instance,
+                                                 # evaluate_unlocks, module_progress,
+                                                 # is_question_visible, ...
+from app.services import validation              # validate_step, run_step_validation
+from app.services import step_service            # save_answers, complete_step
+from app.services.statemachine import (          # legal-transition enforcement
+    assert_step_transition, assert_module_transition, IllegalTransition)
+from app.providers.storage import FileStorage, LocalFileStorage, get_storage
 ```
