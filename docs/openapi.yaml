@@ -692,10 +692,12 @@ components:
     ReviewTask:
       type: object
       properties:
+        id: { type: string }
         moduleInstanceId: { type: string }
         customerName: { type: string }
         moduleName: { type: string }
         status: { type: string, enum: [open, in_review, changes_requested, approved] }
+        notes: { type: [string, "null"] }
     ReviewView:
       type: object
       properties:
