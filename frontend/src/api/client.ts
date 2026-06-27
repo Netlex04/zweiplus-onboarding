@@ -4,7 +4,7 @@
  * only needs to build UI on top of these.
  */
 
-import { apiRequest, buildAuthedUrl } from "./http";
+import { apiRequest, buildAuthedUrl, fetchBlob } from "./http";
 import type {
   AiChatRequest,
   AiChatResponse,
@@ -93,6 +93,31 @@ export function uploadFile(
 
 export function uploadDownloadUrl(uploadId: string): string {
   return buildAuthedUrl(`/api/uploads/${uploadId}/download`);
+}
+
+/**
+ * Trigger a browser download for an auth-protected file. A plain anchor cannot
+ * carry the Bearer token, so we fetch the bytes (token injected by the http
+ * layer) and save the resulting blob via a temporary object URL.
+ */
+export async function downloadAuthedFile(path: string, fallbackName: string): Promise<void> {
+  const { blob, fileName } = await fetchBlob(path);
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = fileName ?? fallbackName;
+  document.body.appendChild(a);
+  a.click();
+  a.remove();
+  URL.revokeObjectURL(url);
+}
+
+export function downloadUpload(uploadId: string, fallbackName: string): Promise<void> {
+  return downloadAuthedFile(`/api/uploads/${uploadId}/download`, fallbackName);
+}
+
+export function downloadTemplateFile(templateKey: string, fallbackName: string): Promise<void> {
+  return downloadAuthedFile(`/api/templates/${templateKey}/file`, fallbackName);
 }
 
 // ---- Templates (Phase 6) --------------------------------------------------

@@ -24,6 +24,11 @@ export function AppShell({ children }: { children: ReactNode }) {
         </Link>
         {user && (
           <div className="topbar__actions">
+            {(user.role === "reviewer" || user.role === "admin") && (
+              <Link to="/review" className="topbar__navlink">
+                Review
+              </Link>
+            )}
             <div className="topbar__user">
               <span className="topbar__name">{user.name}</span>
               <span className="topbar__role">{ROLE_LABEL[user.role] ?? user.role}</span>

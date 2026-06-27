@@ -6,7 +6,10 @@ import { AppShell } from "./components/AppShell";
 import { LoginPage } from "./pages/LoginPage";
 import { HomePage } from "./pages/HomePage";
 import { ProcessDashboardPage } from "./pages/ProcessDashboardPage";
-import { PlaceholderPage } from "./pages/PlaceholderPage";
+import { ModulePage } from "./pages/ModulePage";
+import { StepPage } from "./pages/StepPage";
+import { ReviewListPage } from "./pages/ReviewListPage";
+import { ReviewDetailPage } from "./pages/ReviewDetailPage";
 
 function LoginRoute() {
   const { isAuthenticated } = useAuth();
@@ -51,7 +54,7 @@ export default function App() {
             path="/modules/:moduleInstanceId"
             element={
               <ProtectedShell>
-                <PlaceholderPage title="Modul-Detail" />
+                <ModulePage />
               </ProtectedShell>
             }
           />
@@ -59,7 +62,7 @@ export default function App() {
             path="/steps/:stepInstanceId"
             element={
               <ProtectedShell>
-                <PlaceholderPage title="Step-Bearbeitung" />
+                <StepPage />
               </ProtectedShell>
             }
           />
@@ -68,7 +71,7 @@ export default function App() {
             element={
               <ProtectedRoute roles={["reviewer", "admin"]}>
                 <AppShell>
-                  <PlaceholderPage title="Review-Übersicht" />
+                  <ReviewListPage />
                 </AppShell>
               </ProtectedRoute>
             }
@@ -78,7 +81,7 @@ export default function App() {
             element={
               <ProtectedRoute roles={["reviewer", "admin"]}>
                 <AppShell>
-                  <PlaceholderPage title="Modul-Review" />
+                  <ReviewDetailPage />
                 </AppShell>
               </ProtectedRoute>
             }

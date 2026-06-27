@@ -278,12 +278,14 @@ export interface ReviewTask {
 }
 
 export interface ReviewViewQuestion {
+  key: string;
   label: string;
   answer?: Answer;
   aiSuggestions: AiSuggestion[];
 }
 
 export interface ReviewViewStep {
+  stepInstanceId: string;
   title: string;
   questions: ReviewViewQuestion[];
   aiValidation?: AiValidationResult;
@@ -294,6 +296,8 @@ export interface ReviewView {
   moduleInstanceId: string;
   moduleName: string;
   moduleStatus: ModuleStatus;
+  customerName?: string | null;
+  reviewStatus?: ReviewTaskStatus | null;
   steps: ReviewViewStep[];
 }
 

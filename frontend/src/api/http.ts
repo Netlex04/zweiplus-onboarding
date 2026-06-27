@@ -105,3 +105,28 @@ export async function apiRequest<T>(path: string, options: RequestOptions = {}):
 export function buildAuthedUrl(path: string, query?: Record<string, string | undefined>): string {
   return buildUrl(path, query);
 }
+
+/**
+ * Fetch a binary resource with the Bearer token attached and return the blob
+ * plus any filename advertised via Content-Disposition. Used for protected
+ * file downloads (uploads, template files) that cannot use a bare anchor.
+ */
+export async function fetchBlob(
+  path: string,
+  query?: RequestOptions["query"],
+): Promise<{ blob: Blob; fileName: string | null }> {
+  const headers: Record<string, string> = {};
+  if (authToken) headers.Authorization = `Bearer ${authToken}`;
+
+  let response: Response;
+  try {
+    response = await fetch(buildUrl(path, query), { headers });
+  } catch {
+    throw new ApiError(0, "network_error", "Verbindung zum Server fehlgeschlagen.");
+  }
+  if (!response.ok) throw await toApiError(response);
+
+  const disposition = response.headers.get("Content-Disposition");
+  const match = disposition?.match(/filename="?([^"]+)"?/i);
+  return { blob: await response.blob(), fileName: match ? match[1] : null };
+}

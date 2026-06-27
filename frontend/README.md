@@ -1,9 +1,13 @@
 # Zweiplus Onboarding — Frontend
 
 React + Vite + TypeScript Frontend der Onboarding-Plattform. Phase 5 liefert das
-Fundament: App-Shell, Auth/Routing, typisierter API-Client, Kunden-Dashboard mit
-Modulkarten und Dashboard-KI-Chat. Modul-/Step-/Review-Screens folgen in Phase 6
-(Platzhalter-Routen sind bereits angelegt).
+Fundament (App-Shell, Auth/Routing, typisierter API-Client, Kunden-Dashboard mit
+Modulkarten und Dashboard-KI-Chat). Phase 6 ergänzt den vollständigen
+Modul-Flow: Modul-Start, Step-Bearbeitung mit dynamischen Antworttypen
+(single/multi-select, Text, Datei-Upload), Sichtbarkeitslogik, Inline-Validierung,
+KI-Hilfe je Frage (Erklären/Vorschlag/Prüf-KI), Vorlagen (E-Mail kopieren,
+Datei-Download) sowie den Reviewer-Screen mit Freigabe/Korrektur und
+DPMS-Importvorschau + Import.
 
 ## Voraussetzungen
 
@@ -67,7 +71,11 @@ src/
   components/  Button, Card, StatusPill, ProgressBar, Spinner, EmptyState,
                ErrorBanner, ChatPanel, AppShell, statusMeta.ts (+ ui.css)
   pages/       LoginPage, HomePage (Kunde-Bootstrap / Staff-Liste),
-               DashboardView, ModuleCardView, ProcessDashboardPage, PlaceholderPage
+               DashboardView, ModuleCardView, ProcessDashboardPage,
+               ModulePage (Modul-Start), StepPage (Step-Bearbeitung),
+               QuestionField (dynamische Antworttypen + KI-Hilfe je Frage),
+               TemplateList (Vorlagen), ReviewListPage, ReviewDetailPage,
+               ImportPanel (DPMS-Vorschau + Import) (+ ModuleFlow.css)
   styles/      tokens.css, global.css
   test/        setup.ts (Vitest + RTL)
 ```
@@ -77,8 +85,10 @@ src/
 - `/login` — öffentlich
 - `/` — Dashboard (Kunde) bzw. Prozessliste (Reviewer/Admin)
 - `/processes/:processInstanceId` — Dashboard eines Prozesses (Staff)
-- `/modules/:moduleInstanceId`, `/steps/:stepInstanceId` — Platzhalter (Phase 6)
-- `/review`, `/review/:moduleInstanceId` — Platzhalter, nur Reviewer/Admin (Phase 6)
+- `/modules/:moduleInstanceId` — Modul-Start (Intro, Status, Fortschritt, Step-Liste, Vorlagen, KI-Hilfe)
+- `/steps/:stepInstanceId` — Step-Bearbeitung (dynamische Fragefelder, Validierung, KI-Hilfe, Vorlagen)
+- `/review` — Review-Aufgabenliste, nur Reviewer/Admin
+- `/review/:moduleInstanceId` — Modul-Review (Antworten + Herkunft + Validierungen, Freigabe/Korrektur, DPMS-Import)
 
 Alle außer `/login` sind über `ProtectedRoute` geschützt; nicht angemeldete
 Nutzer werden nach `/login` umgeleitet.
