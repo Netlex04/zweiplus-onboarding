@@ -1,0 +1,240 @@
+/* ============================================================================
+   Zweiplus Context — Design Tokens (Single Source of Truth)
+   ----------------------------------------------------------------------------
+   Grounded in the zweiplus corporate identity (signature green #6ec829,
+   Playfair Display headlines), modernized for a calm, trustworthy product UI.
+
+   Usage:
+   - Import this file once at the app root (e.g. main.tsx / index.css).
+   - NEVER hardcode hex/px values in components. Reference these variables.
+   - Light theme is the default (matches zweiplus CI). Add data-theme="dark"
+     on <html> for dark mode.
+   ============================================================================ */
+
+:root {
+  /* ---- Brand primitives: zweiplus signature green --------------------- */
+  --zp-green-50:  #f1fae6;
+  --zp-green-100: #ddf3c4;
+  --zp-green-200: #c2e898;
+  --zp-green-300: #a3da66;
+  --zp-green-400: #84d049; /* CI shade */
+  --zp-green-500: #6ec829; /* CI CORE — the signature zweiplus green */
+  --zp-green-600: #58a021; /* CI dark shade */
+  --zp-green-700: #437d18;
+  --zp-green-800: #356313;
+  --zp-green-900: #294c11;
+  --zp-green-950: #16290a;
+
+  /* ---- Secondary accent: amber (from CI #fed136), used sparingly ------ */
+  --zp-amber-300: #ffe27a;
+  --zp-amber-400: #ffd54a;
+  --zp-amber-500: #fed136; /* CI */
+  --zp-amber-600: #ecb40c;
+  --zp-amber-700: #b9890a;
+
+  /* ---- Neutrals: a green-whispered "stone" scale (modernized) --------- */
+  --zp-neutral-0:   #ffffff;
+  --zp-neutral-50:  #f7f9f4;
+  --zp-neutral-100: #eef1e9;
+  --zp-neutral-200: #dfe3d8;
+  --zp-neutral-300: #c5ccba;
+  --zp-neutral-400: #9aa491;
+  --zp-neutral-500: #6f7a66;
+  --zp-neutral-600: #515b49;
+  --zp-neutral-700: #3a4234;
+  --zp-neutral-800: #242a20;
+  --zp-neutral-900: #161b12;
+  --zp-neutral-950: #0d110b;
+
+  /* ---- Semantic status primitives ------------------------------------ */
+  --zp-danger-100: #fdeceb;
+  --zp-danger-500: #d6453f;
+  --zp-danger-600: #b3362f;
+  --zp-info-100:   #e9f2f8;
+  --zp-info-500:   #2d6e9e;
+  --zp-info-600:   #225777;
+
+  /* ====================================================================
+     Semantic tokens — LIGHT theme (default)
+     ==================================================================== */
+
+  /* Surfaces & background */
+  --color-bg:            var(--zp-neutral-50);
+  --color-surface:       var(--zp-neutral-0);
+  --color-surface-2:     var(--zp-neutral-50);
+  --color-surface-sunken:var(--zp-neutral-100);
+  --color-overlay:       rgba(13, 17, 11, 0.45);
+
+  /* Borders & dividers */
+  --color-border:        var(--zp-neutral-200);
+  --color-border-strong: var(--zp-neutral-300);
+
+  /* Text */
+  --color-text:           var(--zp-neutral-900);
+  --color-text-secondary: var(--zp-neutral-700);
+  --color-text-muted:     var(--zp-neutral-500);
+  --color-text-onbrand:   #11210a; /* dark ink for use on green fills */
+  --color-text-oninverse: var(--zp-neutral-50);
+
+  /* Brand / primary (the green signal) */
+  --color-primary:        var(--zp-green-500);
+  --color-primary-hover:  var(--zp-green-400);
+  --color-primary-active: var(--zp-green-600);
+  --color-primary-strong: var(--zp-green-700); /* accessible green for text/links on light */
+  --color-primary-subtle: var(--zp-green-50);  /* tinted backgrounds */
+  --color-on-primary:     #11210a;             /* dark ink on green = punchy + AA */
+
+  /* Accent */
+  --color-accent:         var(--zp-amber-500);
+  --color-accent-strong:  var(--zp-amber-700);
+  --color-accent-subtle:  #fff7dd;
+
+  /* Status (semantic) */
+  --color-success:        var(--zp-green-600);
+  --color-success-subtle: var(--zp-green-50);
+  --color-warning:        var(--zp-amber-600);
+  --color-warning-subtle: #fff7dd;
+  --color-danger:         var(--zp-danger-500);
+  --color-danger-subtle:  var(--zp-danger-100);
+  --color-info:           var(--zp-info-500);
+  --color-info-subtle:    var(--zp-info-100);
+
+  /* Focus ring (always brand green for a consistent signal) */
+  --color-ring:           rgba(110, 200, 41, 0.45);
+
+  /* ---- Typography ----------------------------------------------------- */
+  --font-display: "Playfair Display", Georgia, "Times New Roman", serif;
+  --font-sans:    "Hanken Grotesk", "Montserrat", system-ui, -apple-system, sans-serif;
+  --font-mono:    "IBM Plex Mono", ui-monospace, "SFMono-Regular", Menlo, monospace;
+
+  --text-xs:   0.75rem;   /* 12 */
+  --text-sm:   0.875rem;  /* 14 */
+  --text-base: 1rem;      /* 16 */
+  --text-md:   1.125rem;  /* 18 */
+  --text-lg:   1.375rem;  /* 22 */
+  --text-xl:   1.75rem;   /* 28 */
+  --text-2xl:  2.25rem;   /* 36 */
+  --text-3xl:  3rem;      /* 48 */
+  --text-display: clamp(2.75rem, 1.5rem + 5vw, 4.75rem);
+
+  --weight-regular: 400;
+  --weight-medium:  500;
+  --weight-semibold:600;
+  --weight-bold:    700;
+  --weight-display: 800;
+
+  --leading-tight: 1.1;
+  --leading-snug:  1.3;
+  --leading-normal:1.55;
+  --tracking-tight: -0.02em;
+  --tracking-normal: 0;
+  --tracking-label: 0.08em; /* uppercase eyebrow labels */
+
+  /* ---- Spacing scale (4px base) --------------------------------------- */
+  --space-0: 0;
+  --space-1: 0.25rem;  /* 4  */
+  --space-2: 0.5rem;   /* 8  */
+  --space-3: 0.75rem;  /* 12 */
+  --space-4: 1rem;     /* 16 */
+  --space-5: 1.5rem;   /* 24 */
+  --space-6: 2rem;     /* 32 */
+  --space-7: 3rem;     /* 48 */
+  --space-8: 4rem;     /* 64 */
+  --space-9: 6rem;     /* 96 */
+
+  /* ---- Radii (modern, softly rounded — not pill-y) -------------------- */
+  --radius-xs:  6px;
+  --radius-sm:  8px;
+  --radius-md:  10px;
+  --radius-lg:  14px;
+  --radius-xl:  20px;
+  --radius-2xl: 28px;
+  --radius-full: 999px;
+
+  /* ---- Elevation (soft, green-tinted shadows) ------------------------- */
+  --shadow-xs: 0 1px 2px rgba(22, 27, 18, 0.06);
+  --shadow-sm: 0 1px 3px rgba(22, 27, 18, 0.08), 0 1px 2px rgba(22, 27, 18, 0.05);
+  --shadow-md: 0 4px 12px -2px rgba(22, 27, 18, 0.10), 0 2px 6px -2px rgba(22, 27, 18, 0.07);
+  --shadow-lg: 0 14px 30px -8px rgba(22, 27, 18, 0.16), 0 6px 12px -6px rgba(22, 27, 18, 0.10);
+  --shadow-brand: 0 10px 28px -8px rgba(110, 200, 41, 0.50);
+  --ring: 0 0 0 3px var(--color-ring);
+
+  /* ---- Motion --------------------------------------------------------- */
+  --ease-out:    cubic-bezier(0.22, 1, 0.36, 1);
+  --ease-spring: cubic-bezier(0.34, 1.56, 0.64, 1);
+  --dur-fast: 120ms;
+  --dur:      200ms;
+  --dur-slow: 360ms;
+
+  /* ---- Atmosphere (subtle depth, not flat white) ---------------------- */
+  --gradient-brand: linear-gradient(135deg, var(--zp-green-500), var(--zp-green-700));
+  --gradient-mesh:
+    radial-gradient(80% 60% at 12% 8%, rgba(110, 200, 41, 0.10), transparent 60%),
+    radial-gradient(70% 50% at 92% 0%, rgba(254, 209, 54, 0.08), transparent 55%);
+
+  /* ---- Layout --------------------------------------------------------- */
+  --container-max: 1200px;
+  --sidebar-width: 264px;
+  --header-height: 64px;
+}
+
+/* ======================================================================
+   Semantic tokens — DARK theme
+   ====================================================================== */
+[data-theme="dark"] {
+  --color-bg:            var(--zp-neutral-950);
+  --color-surface:       var(--zp-neutral-900);
+  --color-surface-2:     #1c2317;
+  --color-surface-sunken:#10160e;
+  --color-overlay:       rgba(0, 0, 0, 0.6);
+
+  --color-border:        #2c3424;
+  --color-border-strong: #3a4234;
+
+  --color-text:           var(--zp-neutral-100);
+  --color-text-secondary: var(--zp-neutral-300);
+  --color-text-muted:     var(--zp-neutral-400);
+  --color-text-onbrand:   #11210a;
+  --color-text-oninverse: var(--zp-neutral-900);
+
+  --color-primary:        var(--zp-green-400); /* brighter green reads better on dark */
+  --color-primary-hover:  var(--zp-green-300);
+  --color-primary-active: var(--zp-green-500);
+  --color-primary-strong: var(--zp-green-300);
+  --color-primary-subtle: rgba(110, 200, 41, 0.12);
+  --color-on-primary:     #11210a;
+
+  --color-accent:         var(--zp-amber-400);
+  --color-accent-strong:  var(--zp-amber-300);
+  --color-accent-subtle:  rgba(254, 209, 54, 0.14);
+
+  --color-success:        var(--zp-green-400);
+  --color-success-subtle: rgba(110, 200, 41, 0.14);
+  --color-warning:        var(--zp-amber-400);
+  --color-warning-subtle: rgba(254, 209, 54, 0.14);
+  --color-danger:         #f0726c;
+  --color-danger-subtle:  rgba(214, 69, 63, 0.18);
+  --color-info:           #6cb0d6;
+  --color-info-subtle:    rgba(45, 110, 158, 0.20);
+
+  --color-ring:           rgba(132, 208, 73, 0.50);
+
+  --shadow-xs: 0 1px 2px rgba(0, 0, 0, 0.40);
+  --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.45), 0 1px 2px rgba(0, 0, 0, 0.35);
+  --shadow-md: 0 4px 12px -2px rgba(0, 0, 0, 0.50), 0 2px 6px -2px rgba(0, 0, 0, 0.40);
+  --shadow-lg: 0 14px 30px -8px rgba(0, 0, 0, 0.60), 0 6px 12px -6px rgba(0, 0, 0, 0.45);
+  --shadow-brand: 0 10px 28px -8px rgba(110, 200, 41, 0.40);
+
+  --gradient-mesh:
+    radial-gradient(80% 60% at 12% 8%, rgba(110, 200, 41, 0.14), transparent 60%),
+    radial-gradient(70% 50% at 92% 0%, rgba(254, 209, 54, 0.06), transparent 55%);
+}
+
+/* Respect user motion preferences */
+@media (prefers-reduced-motion: reduce) {
+  :root {
+    --dur-fast: 0ms;
+    --dur: 0ms;
+    --dur-slow: 0ms;
+  }
+}

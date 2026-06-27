@@ -11,7 +11,7 @@ Modulare, KI-gestützte Onboarding-Plattform für Datenschutzprozesse. Kunden be
 | 2 Backend-API & Validierung | REST, Statemachine, Backend-Validierung, Upload | ✅ |
 | 3 KI-Service | LangChain (OpenAI-kompatibel/lokal), Chat/Suggest/Validate | ✅ |
 | 4 Review & DPMS | Review, Canonical, DPMS-Adapter, Import | ⏳ geplant |
-| 5 Frontend-Fundament | Dashboard, Modulkarten, Dashboard-KI | ⏳ geplant |
+| 5 Frontend-Fundament | App-Shell, Auth/Routing, API-Client, Dashboard, Modulkarten, Dashboard-KI | ✅ |
 | 6 Frontend Modul-Flow & Review | Bearbeitung, Antworttypen, Vorlagen, Review | ⏳ geplant |
 
 ## Schnellstart
@@ -22,13 +22,26 @@ docker compose up --build
 # Frontend: http://localhost:5173   API: http://localhost:8000   Docs: http://localhost:8000/docs
 ```
 
-Lokal ohne Docker: siehe `backend/README` bzw. `frontend/README` (ab Phase 1/5).
+Lokal ohne Docker:
+
+```bash
+# Backend (Port 8000)
+cd backend && source venv/bin/activate
+DATABASE_URL=sqlite:///./dev.db alembic upgrade head
+AI_USE_STUB=1 SEED_ON_STARTUP=1 DATABASE_URL=sqlite:///./dev.db uvicorn app.main:app
+
+# Frontend (Port 5173) — in einem zweiten Terminal
+cd frontend && npm install
+VITE_API_URL=http://localhost:8000 npm run dev
+```
+
+Details: siehe `backend/README.md` bzw. `frontend/README.md`.
 
 ## Tests
 
 ```bash
 cd backend && pytest          # Backend (deterministisch, KI-Stub-LLM, SQLite)
-cd frontend && npm test       # Frontend (ab Phase 5)
+cd frontend && npm test       # Frontend (Vitest + React Testing Library)
 ```
 
 ## Konfiguration

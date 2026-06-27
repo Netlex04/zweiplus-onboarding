@@ -96,17 +96,20 @@ Sechs Phasen, die nahtlos ineinandergreifen. Jede Phase wird von einem eigenen S
 **Ziel:** Lauffähige React-App, Auth, Dashboard mit Modulkarten + Dashboard-KI-Chat.
 **Voraussetzungen:** P2–P4 (APIs).
 
-**Arbeitspakete:**
-- [ ] Vite + React + TS Gerüst, `tokens.css` aus Design-System übernommen, globale Styles, Fonts.
-- [ ] API-Client (typisiert) + Auth (Login, Token, Rollen-Routing), Lade-/Fehler-/Leerzustände.
-- [ ] Routing: Login, Dashboard, Modul, Step, Review.
-- [ ] Dashboard (FR-DASH, §9.1/9.2): Begrüßung, Gesamtfortschritt, Modulkarten (Name, Explainer, Status-Pill, Progressbalken, Zuständigkeit, Aufwand, Schloss + Freischalthinweis, CTA), gesperrt ausgegraut.
-- [ ] Dashboard-KI-Chat (FR-DASH-004) gegen `/api/ai/chat` (context=dashboard).
-- [ ] Design-System verbindlich: nur Tokens, keine Hex/px-Literale, AA-Kontrast.
-- [ ] Im Browser verifizieren (agent-browser): Login + Dashboard rendern, gesperrte/freie Module korrekt.
+**Status:** ✅ abgeschlossen (`feat/phase-5-frontend-dashboard`).
 
-**Schnittstellenvertrag → Phase 6:** API-Client, Auth-Context, Routing, UI-Grundkomponenten (Button, Card, Pill, Progress, Chat) wiederverwendbar.
-**DoD:** App startet, Login funktioniert, Dashboard zeigt Seed-Module korrekt; Browser-Smoke grün. Deckt §9.1/9.2, FR-DASH.
+**Arbeitspakete:**
+- [x] Vite + React + TS Gerüst, `tokens.css` aus Design-System übernommen, globale Styles, Fonts (`@fontsource`).
+- [x] API-Client (typisiert, inkl. Phase-6-Endpunkte) + Auth (Login, Token in memory + localStorage, Rollen-Routing), Lade-/Fehler-/Leerzustände.
+- [x] Routing: `/login`, `/` (Dashboard/Prozesswahl), `/processes/:id`, Platzhalter `/modules/:id`, `/steps/:id`, `/review`(+`:id`); `ProtectedRoute`.
+- [x] Dashboard (FR-DASH, §9.1/9.2): Begrüßung, Gesamtfortschritt, Modulkarten (Name, Explainer, Status-Pill, Progressbalken, Zuständigkeit, Aufwand, Schloss + Freischalthinweis, CTA), gesperrt ausgegraut/deaktiviert.
+- [x] Dashboard-KI-Chat (FR-DASH-004) gegen `/api/ai/chat` (context=dashboard).
+- [x] Design-System verbindlich: nur Tokens, keine Hex/px-Literale, AA-Kontrast, dunkle Tinte auf Grün.
+- [x] Im Browser verifiziert (agent-browser): Login (Kunde/Reviewer), Bootstrap, Dashboard mit 1 freiem + 2 gesperrten Modulen, Chat-Antwort.
+- [x] Tests (Vitest + RTL): StatusPill-Mapping, ProgressBar, Dashboard-Render/Locked/CTA-Nav, Auth/ProtectedRoute, API-Error-Mapping (27 Tests grün).
+
+**Schnittstellenvertrag → Phase 6:** API-Client (`src/api/`, alle Endpunkte typisiert), Auth-Context (`useAuth`), `ProtectedRoute`, UI-Grundkomponenten (`Button`, `Card`, `StatusPill`, `ProgressBar`, `Spinner`, `EmptyState`, `ErrorBanner`, `ChatPanel`, `AppShell`) wiederverwendbar.
+**DoD:** ✅ App startet, Login funktioniert, Dashboard zeigt Seed-Module korrekt; Browser-Smoke grün. Deckt §9.1/9.2, FR-DASH.
 
 ---
 

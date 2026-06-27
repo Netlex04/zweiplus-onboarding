@@ -1,0 +1,116 @@
+/* Dashboard + module card grid. */
+
+.dash__header {
+  margin-bottom: var(--space-6);
+}
+.dash__greeting {
+  font-family: var(--font-display);
+  font-weight: var(--weight-display);
+  font-size: var(--text-2xl);
+  line-height: var(--leading-tight);
+  letter-spacing: var(--tracking-tight);
+  margin: var(--space-3) 0 var(--space-2);
+}
+.dash__greeting em {
+  font-style: italic;
+  color: var(--color-primary-strong);
+}
+.dash__lede {
+  color: var(--color-text-secondary);
+  max-width: 60ch;
+}
+
+.dash__progress {
+  margin: var(--space-5) 0 var(--space-6);
+  max-width: 480px;
+}
+.dash__progress-head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  margin-bottom: var(--space-2);
+}
+.dash__progress-label {
+  font-size: var(--text-sm);
+  font-weight: var(--weight-semibold);
+}
+.dash__progress-value {
+  font-family: var(--font-mono);
+  font-size: var(--text-sm);
+  color: var(--color-primary-strong);
+}
+
+.module-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: var(--space-5);
+}
+
+.module-card {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  height: 100%;
+}
+.module-card--locked {
+  opacity: 0.7;
+}
+.module-card__top {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: var(--space-3);
+}
+.module-card__name {
+  font-family: var(--font-display);
+  font-weight: var(--weight-bold);
+  font-size: var(--text-lg);
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+}
+.module-card__lock {
+  font-size: var(--text-base);
+}
+.module-card__explainer {
+  color: var(--color-text-muted);
+  font-size: var(--text-sm);
+  margin: 0;
+}
+.module-card__meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2) var(--space-5);
+  font-size: var(--text-xs);
+  color: var(--color-text-secondary);
+  margin-top: var(--space-1);
+}
+.module-card__meta-item {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+.module-card__meta-key {
+  text-transform: uppercase;
+  letter-spacing: var(--tracking-label);
+  color: var(--color-text-muted);
+  font-size: var(--text-xs);
+}
+.module-card__meta-val {
+  font-weight: var(--weight-medium);
+  color: var(--color-text);
+}
+.module-card__unlock {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--space-2);
+  font-size: var(--text-xs);
+  color: var(--color-text-muted);
+  background: var(--color-surface-sunken);
+  border-radius: var(--radius-sm);
+  padding: var(--space-2) var(--space-3);
+}
+.module-card__footer {
+  margin-top: auto;
+  padding-top: var(--space-2);
+}
