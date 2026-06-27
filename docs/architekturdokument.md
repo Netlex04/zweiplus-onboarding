@@ -28,7 +28,7 @@ flowchart TD
   FE -->|REST /api| BE[Backend / Modul-Engine\nFastAPI]
   BE --> DB[(PostgreSQL)]
   BE --> ST[/Datei-Storage\nlocal, Seam/]
-  BE -->|AiProvider Seam| AI{{KI-Provider\nfake | Anthropic Claude}}
+  BE -->|AiProvider Seam| AI{{KI-Provider\nLangChain -> OpenAI-kompatibel\n(OpenAI ODER lokales Modell)}}
   BE -->|TargetAdapter Seam| DPMS{{DPMS-Adapter\nMapping + Importvorschau}}
 ```
 
