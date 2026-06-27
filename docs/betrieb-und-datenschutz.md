@@ -41,3 +41,17 @@ Jede `Answer` trägt `source` (`user|ai|document|manual`), `ai_suggested`, `crea
 - Trennung von Kundendaten je Prozessinstanz.
 - Datensparsamkeit gegenüber KI-Diensten; Option auf datenschutzkonforme/self-hosted Modelle (Seam vorbereitet).
 - Löschkonzept: Prozessinstanz-Löschung entfernt zugehörige Instanzen, Antworten, Uploads (post-MVP zu automatisieren).
+
+## 8. Build/Start (Docker Compose)
+
+Ein-Befehl-Start des Gesamtstacks (Postgres + Backend + Frontend):
+
+```bash
+docker compose up --build        # Frontend :5173, API :8000, Docs :8000/docs
+docker compose down -v           # Stoppen und Volumes (DB, Storage) entfernen
+```
+
+- **Services:** `db` (postgres:16-alpine, Healthcheck `pg_isready`, Named Volume `db_data`), `backend` (FastAPI, `depends_on: db healthy`; Entrypoint führt `alembic upgrade head` aus, dann `uvicorn`; Seeds via Startup-Hook), `frontend` (Multi-Stage Build → nginx:alpine, SPA-Fallback auf `index.html`).
+- **Konfiguration:** Single Source der Compose-Defaults ist die Wurzel-`.env.example` (nach `.env` kopieren zum Überschreiben) — nur Demo-Werte, keine echten Secrets. `DATABASE_URL` nutzt den Treiber `postgresql+psycopg2`; `CORS_ORIGINS` ist als JSON-Array zu setzen (pydantic-settings parst Listenfelder als JSON), z. B. `["http://localhost:5173"]`.
+- **KI/DSGVO:** Default `AI_USE_STUB=1` (deterministischer Offline-Stub, kein Schlüssel/Server nötig). Für einen echten, OpenAI-kompatiblen Provider `AI_USE_STUB=0` setzen und `AI_BASE_URL`/`AI_API_KEY`/`AI_MODEL` füllen.
+- **Persistenz:** DB im Volume `db_data`, Uploads im Volume `backend_storage` (`STORAGE_DIR=/app/storage`).

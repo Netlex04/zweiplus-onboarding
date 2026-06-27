@@ -17,25 +17,29 @@ Modulare, KI-gestützte Onboarding-Plattform für Datenschutzprozesse. Kunden be
 ## Schnellstart
 
 ```bash
-# Alles (Postgres + Backend + Frontend)
+# Alles (Postgres + Backend + Frontend) — ein Befehl
 docker compose up --build
 # Frontend: http://localhost:5173   API: http://localhost:8000   Docs: http://localhost:8000/docs
+docker compose down -v   # Stoppen + Volumes (DB, Storage) aufräumen
 ```
+
+Das Backend führt beim Start automatisch `alembic upgrade head` gegen Postgres aus und lädt die Seeds. **KI:** Standardmäßig läuft der deterministische Stub (`AI_USE_STUB=1`) — kein Schlüssel/Modellserver nötig. Für einen echten, OpenAI-kompatiblen Provider in der Wurzel-`.env` (Vorlage `.env.example`) `AI_USE_STUB=0` setzen und `AI_BASE_URL`/`AI_API_KEY`/`AI_MODEL` füllen.
 
 Lokal ohne Docker:
 
 ```bash
 # Backend (Port 8000)
-cd backend && source venv/bin/activate
+cd backend && python3 -m venv venv && source venv/bin/activate
+pip install -r requirements.txt
 DATABASE_URL=sqlite:///./dev.db alembic upgrade head
-AI_USE_STUB=1 SEED_ON_STARTUP=1 DATABASE_URL=sqlite:///./dev.db uvicorn app.main:app
+AI_USE_STUB=1 SEED_ON_STARTUP=1 DATABASE_URL=sqlite:///./dev.db uvicorn app.main:app --port 8000
 
 # Frontend (Port 5173) — in einem zweiten Terminal
-cd frontend && npm install
+cd frontend && npm ci
 VITE_API_URL=http://localhost:8000 npm run dev
 ```
 
-Details: siehe `backend/README.md` bzw. `frontend/README.md`.
+Demo-Login: `kunde@demo.test` / `demo1234`. Details: siehe `backend/README.md` bzw. `frontend/README.md`.
 
 ## Tests
 
@@ -46,7 +50,7 @@ cd frontend && npm test       # Frontend (Vitest + React Testing Library)
 
 ## Konfiguration
 
-`.env` (Vorlage `.env.example`): `DATABASE_URL`, `AI_BASE_URL` (OpenAI-kompatibler Endpoint, z. B. `https://api.openai.com/v1` oder lokal `http://localhost:11434/v1`), `AI_API_KEY`, `AI_MODEL`, `STORAGE_DIR`, `MAX_UPLOAD_MB`, `JWT_SECRET`, `CORS_ORIGINS`. Tests laufen ohne KI-Variablen (Stub-LLM). Keine Secrets im Repo.
+`.env` (Vorlage `.env.example`): `DATABASE_URL` (Postgres-Treiber `postgresql+psycopg2`), `AI_USE_STUB`, `AI_BASE_URL` (OpenAI-kompatibler Endpoint, z. B. `https://api.openai.com/v1` oder lokal `http://localhost:11434/v1`), `AI_API_KEY`, `AI_MODEL`, `STORAGE_DIR`, `MAX_UPLOAD_MB`, `JWT_SECRET`, `CORS_ORIGINS`. Hinweis: `CORS_ORIGINS` per ENV als JSON-Array setzen, z. B. `["http://localhost:5173"]`. Die Wurzel-`.env.example` ist die Single Source der Docker-Compose-Defaults. Tests laufen ohne KI-Variablen (Stub-LLM). Keine Secrets im Repo.
 
 Demo-Zugänge: siehe [docs/annahmen.md](docs/annahmen.md).
 

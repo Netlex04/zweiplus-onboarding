@@ -1,0 +1,56 @@
+# Zweiplus Onboarding — full stack (Postgres + Backend + Frontend).
+# One-command start:  docker compose up --build
+# Defaults live in .env.example (copy to .env to override). Demo values only —
+# no real secrets. AI runs the deterministic stub by default (AI_USE_STUB=1);
+# point AI_BASE_URL/AI_API_KEY/AI_MODEL at a real OpenAI-compatible endpoint to
+# use a live provider.
+
+services:
+  db:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-zweiplus}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-zweiplus}
+      POSTGRES_DB: ${POSTGRES_DB:-zweiplus}
+    volumes:
+      - db_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-zweiplus} -d ${POSTGRES_DB:-zweiplus}"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  backend:
+    build: ./backend
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      DATABASE_URL: postgresql+psycopg2://${POSTGRES_USER:-zweiplus}:${POSTGRES_PASSWORD:-zweiplus}@db:5432/${POSTGRES_DB:-zweiplus}
+      AI_USE_STUB: ${AI_USE_STUB:-1}
+      AI_BASE_URL: ${AI_BASE_URL:-http://localhost:11434/v1}
+      AI_API_KEY: ${AI_API_KEY:-not-needed}
+      AI_MODEL: ${AI_MODEL:-gpt-4o-mini}
+      SEED_ON_STARTUP: ${SEED_ON_STARTUP:-1}
+      JWT_SECRET: ${JWT_SECRET:-dev-insecure-change-me}
+      CORS_ORIGINS: ${CORS_ORIGINS:-["http://localhost:5173"]}
+      STORAGE_DIR: /app/storage
+      MAX_UPLOAD_MB: ${MAX_UPLOAD_MB:-10}
+    volumes:
+      - backend_storage:/app/storage
+    ports:
+      - "8000:8000"
+
+  frontend:
+    build:
+      context: ./frontend
+      args:
+        VITE_API_URL: ${VITE_API_URL:-http://localhost:8000}
+    depends_on:
+      - backend
+    ports:
+      - "5173:80"
+
+volumes:
+  db_data:
+  backend_storage:

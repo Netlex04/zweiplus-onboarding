@@ -1,0 +1,26 @@
+# Build context excludes — keep the image slim and reproducible.
+venv/
+.venv/
+env/
+__pycache__/
+*.py[cod]
+*.egg-info/
+.pytest_cache/
+.mypy_cache/
+
+# Local data / secrets — never bake into the image.
+*.db
+*.sqlite
+*.sqlite3
+.env
+*.env
+!.env.example
+storage/
+
+# Tests are not needed at runtime.
+tests/
+
+# OS / editor
+.DS_Store
+.idea/
+.vscode/
