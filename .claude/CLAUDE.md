@@ -37,7 +37,7 @@
 
 - **Backend:** Python 3.11+, FastAPI, SQLAlchemy 2.x, Alembic, Pydantic v2 (`pydantic-settings`), pytest. Verbindliche Backend-Validierung über Pydantic + fachliche Regeln.
 - **DB:** PostgreSQL (Laufzeit, Docker Compose); SQLite via `DATABASE_URL` für deterministische Tests.
-- **KI:** hinter `AiProvider`-Seam. Default `fake` (deterministisch, ohne Secret); echter Provider Anthropic Claude (`claude-opus-4-8`) per ENV. Aktuelle SDK-Syntax via `claude-api`-Skill prüfen, nicht raten.
+- **KI:** hinter `AiProvider`-Seam, umgesetzt mit **LangChain** (`langchain-openai` `ChatOpenAI`) gegen eine **OpenAI-kompatible** API. `AI_BASE_URL` konfigurierbar → OpenAI **oder** lokales Modell (Ollama/LM Studio/vLLM). Tests gegen deterministischen Stub-LLM. Aktuelle LangChain-Syntax per Websuche prüfen, nicht raten.
 - **Seams:** `AiProvider`, `FileStorage`, `TargetAdapter` als ABCs + Fakes; Auswahl per `Settings`.
 - **Frontend:** React + Vite + TypeScript. Design **ausschließlich** über `frontend/src/styles/tokens.css` (Kopie aus `docs/design-system/tokens.css`) — keine Hex-/px-Literale in Components, AA-Kontrast, dunkle Tinte auf Grün.
 - **Start:** `docker compose up --build`. **Tests:** `cd backend && pytest`, `cd frontend && npm test`.

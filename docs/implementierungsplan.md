@@ -8,7 +8,7 @@ Sechs Phasen, die nahtlos ineinandergreifen. Jede Phase wird von einem eigenen S
 |-------|----------------------------|--------------------------|
 | 1 Backend-Fundament | SQLAlchemy-Modelle (alle Definition+Instance-Entitäten), Alembic-Migrationen, Seed-Loader + 3 Seed-Module, `Settings`, DB-Session-Dependency, Enums | — |
 | 2 Backend-API & Validierung | REST-Endpunkte Prozess/Modul/Step/Answer/Upload/Template, Modul-Engine (Freischaltung/Progress/Statemachine), Backend-Validierungs-Service, Auth, `openapi.yaml` aktuell | Modelle, Enums, Seeds, Settings (P1) |
-| 3 KI-Service | `AiProvider`-Seam (fake+anthropic), `/api/ai/*`-Endpunkte, Prompt-Komposition aus `ai_knowledge_config`+`KnowledgeEntry`, strukturierter Output, `AiSuggestion`/`AiValidationResult`-Persistenz | Modelle+Knowledge (P1), Step/Answer-API (P2) |
+| 3 KI-Service | `AiProvider`-Seam (LangChain gegen OpenAI-kompatible API + Test-Stub), `/api/ai/*`-Endpunkte, Prompt-Komposition aus `ai_knowledge_config`+`KnowledgeEntry`, strukturierter Output, `AiSuggestion`/`AiValidationResult`-Persistenz | Modelle+Knowledge (P1), Step/Answer-API (P2) |
 | 4 Review & DPMS-Adapter | `/api/review/*`, Canonical-Output-Service, `TargetAdapter`-Seam + `DpmsAdapter`, Importvorschau/-status, `/api/import-jobs/*` | Statemachine+Validierung (P2), AiSuggestion (P3) |
 | 5 Frontend-Fundament | Vite/React/TS-App, Tokens, API-Client+Auth, Routing, Dashboard (Modulkarten, Status, Zuständigkeit, Sperre, Progress), Dashboard-KI-Chat | Alle Backend-APIs (P2–P4) |
 | 6 Frontend Modul-Flow & Review | Modul-Start, Modul-Bearbeitung (4 Antworttypen, Upload, KI-Hilfe, Vorlagen, Validierung), Review-Screen (Freigabe, Importvorschau) | API-Client+Routing (P5), Backend-APIs |
@@ -62,14 +62,14 @@ Sechs Phasen, die nahtlos ineinandergreifen. Jede Phase wird von einem eigenen S
 **Voraussetzungen:** P1, P2.
 
 **Arbeitspakete:**
-- [ ] `AiProvider`-ABC + `FakeAiProvider` (deterministisch) + `AnthropicAiProvider` (`claude-opus-4-8`, Anthropic SDK, per ENV). Auswahl per Settings. **KI-Wissen aktuell halten:** Anthropic-SDK-Syntax vor Implementierung verifizieren (siehe `claude-api`-Skill).
+- [ ] `AiProvider`-ABC + `LangChainAiProvider` (LangChain `langchain-openai` `ChatOpenAI` gegen OpenAI-kompatible API, `base_url` per ENV → OpenAI oder lokales Modell) + deterministischer `StubChatModel` für Tests. **KI-Wissen aktuell halten:** aktuelle LangChain-Syntax (`with_structured_output`, `ChatOpenAI`) vor Implementierung per Websuche verifizieren.
 - [ ] Prompt-Komposition: Auflösung `ai_knowledge_config` (Modul→Step→Frage) gegen `KnowledgeEntry`; Kontext aus bisherigen Antworten/Dokumenten; minimale Datenweitergabe.
 - [ ] `POST /api/ai/chat` (Kontexte dashboard/module/step/question), `POST /api/ai/suggest` (strukturierter Vorschlag → `AiSuggestion`), `POST /api/ai/validate` (semantisch → `AiValidationResult`), `POST /api/ai/analyze-document` (Upload→Vorschläge, Herkunft FR-DOC-004).
 - [ ] Strukturierter Output Backend-validiert vor Persistenz; `requires_review` gesetzt; KI schreibt nie final (FR-AI-007).
-- [ ] Tests: deterministisch gegen `FakeAiProvider` — Kontextauflösung, Schema-Konformität des Outputs, Validierungsergebnis-Persistenz, Knowledge-Kaskade.
+- [ ] Tests: deterministisch gegen `StubChatModel` — Kontextauflösung, Schema-Konformität des Outputs, Validierungsergebnis-Persistenz, Knowledge-Kaskade.
 
 **Schnittstellenvertrag → Phase 4/6:** `/api/ai/*`-Endpunkte + Response-Schemas; `AiSuggestion`/`AiValidationResult` lesbar für Review/Frontend.
-**DoD:** `pytest` grün (Fake-Provider); reale Smoke der Endpunkte. Deckt FR-AI-001…007, FR-DOC-003/004, §10, §11.
+**DoD:** `pytest` grün (Stub-LLM); reale Smoke der Endpunkte. Deckt FR-AI-001…007, FR-DOC-003/004, §10, §11.
 
 ---
 

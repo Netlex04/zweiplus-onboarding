@@ -9,7 +9,7 @@ Modulare, KI-gestützte Onboarding-Plattform für Datenschutzprozesse. Kunden be
 | 0/1 Doku & Planung | Architektur, Plan, OpenAPI, Design-System | ✅ |
 | 1 Backend-Fundament | Datenmodell, Migrationen, Seeds | ✅ |
 | 2 Backend-API & Validierung | REST, Statemachine, Backend-Validierung, Upload | ✅ |
-| 3 KI-Service | Provider-Seam (fake/Anthropic), Chat/Suggest/Validate | ⏳ geplant |
+| 3 KI-Service | LangChain (OpenAI-kompatibel/lokal), Chat/Suggest/Validate | ⏳ geplant |
 | 4 Review & DPMS | Review, Canonical, DPMS-Adapter, Import | ⏳ geplant |
 | 5 Frontend-Fundament | Dashboard, Modulkarten, Dashboard-KI | ⏳ geplant |
 | 6 Frontend Modul-Flow & Review | Bearbeitung, Antworttypen, Vorlagen, Review | ⏳ geplant |
@@ -27,13 +27,13 @@ Lokal ohne Docker: siehe `backend/README` bzw. `frontend/README` (ab Phase 1/5).
 ## Tests
 
 ```bash
-cd backend && pytest          # Backend (deterministisch, KI-Fake-Provider, SQLite)
+cd backend && pytest          # Backend (deterministisch, KI-Stub-LLM, SQLite)
 cd frontend && npm test       # Frontend (ab Phase 5)
 ```
 
 ## Konfiguration
 
-`.env` (Vorlage `.env.example`): `DATABASE_URL`, `AI_PROVIDER` (`fake`|`anthropic`, Default `fake`), `ANTHROPIC_API_KEY`, `ANTHROPIC_MODEL` (`claude-opus-4-8`), `STORAGE_DIR`, `MAX_UPLOAD_MB`, `JWT_SECRET`, `CORS_ORIGINS`. Keine Secrets im Repo.
+`.env` (Vorlage `.env.example`): `DATABASE_URL`, `AI_BASE_URL` (OpenAI-kompatibler Endpoint, z. B. `https://api.openai.com/v1` oder lokal `http://localhost:11434/v1`), `AI_API_KEY`, `AI_MODEL`, `STORAGE_DIR`, `MAX_UPLOAD_MB`, `JWT_SECRET`, `CORS_ORIGINS`. Tests laufen ohne KI-Variablen (Stub-LLM). Keine Secrets im Repo.
 
 Demo-Zugänge: siehe [docs/annahmen.md](docs/annahmen.md).
 

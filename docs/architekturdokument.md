@@ -136,7 +136,11 @@ Alle geschützten Endpunkte: `Authorization: Bearer <token>`; Rollenprüfung im 
 class AiProvider(ABC):
     def chat(self, system: str, messages: list[Msg]) -> str: ...
     def structured(self, system: str, prompt: str, schema: dict) -> dict: ...   # JSON-Output
-# Implementierungen: FakeAiProvider (deterministisch), AnthropicAiProvider (claude-opus-4-8)
+# Implementierung: LangChainAiProvider — LangChain (langchain-openai ChatOpenAI) gegen
+#   eine OpenAI-kompatible Chat-Completions-API (base_url konfigurierbar -> OpenAI ODER
+#   lokales Modell via Ollama/LM Studio/vLLM). structured() via LangChain Structured-Output
+#   (with_structured_output / JSON-Schema). Einziger Produkt-Provider.
+# Tests: StubChatModel — deterministischer LangChain-BaseChatModel (offline, kein Server).
 
 class FileStorage(ABC):
     def save(self, data: bytes, name: str) -> str: ...      # -> storage_path
@@ -150,18 +154,18 @@ class TargetAdapter(ABC):
 # DpmsAdapter (Mapping + simulierter Import)
 ```
 
-Provider-Wahl über `Settings.ai_provider` (`fake|anthropic`), `Settings.storage` etc.
+KI-Anbindung herstellerneutral: `LangChainAiProvider` spricht jede OpenAI-kompatible API (`AI_BASE_URL`). `Settings.storage` etc. analog.
 
 ## 8. KI-Konzept (technisch)
 
 - **Kontexte**: `dashboard | module | step | question | validation`. Jeder Request liefert seinen Kontext + Referenz-IDs.
 - **Prompt-Komposition**: System-Prompt = Basis-Datenschutz + aufgelöste `ai_knowledge_config` (Modul→Step→Frage kaskadiert) → `KnowledgeEntry`-Inhalte. Plus bisherige Antworten + Dokumentauszüge als Kontext.
-- **Strukturierter Output** (`/ai/suggest`, `/ai/validate`): JSON nach Schema (`suggestionType, proposedValue, confidence, requiresReview, openQuestions`), Backend-validiert vor Persistenz als `AiSuggestion`/`AiValidationResult`.
+- **Strukturierter Output** (`/ai/suggest`, `/ai/validate`): JSON nach Schema (`suggestionType, proposedValue, confidence, requiresReview, openQuestions`) via LangChain Structured-Output, Backend-validiert vor Persistenz als `AiSuggestion`/`AiValidationResult`.
 - **Trennung**: KI schreibt nie final; Vorschläge sind `requires_review` und müssen über Backend-Validierung + Review.
 
 ## 9. Konfiguration
 
-`.env` (Beispiel in `.env.example`): `DATABASE_URL`, `AI_PROVIDER` (`fake|anthropic`), `ANTHROPIC_API_KEY` (nur wenn anthropic), `ANTHROPIC_MODEL` (default `claude-opus-4-8`), `STORAGE_DIR`, `MAX_UPLOAD_MB`, `JWT_SECRET`, `CORS_ORIGINS`. Keine Secrets im Repo (`.gitignore`).
+`.env` (Beispiel in `.env.example`): `DATABASE_URL`, `AI_BASE_URL` (OpenAI-kompatibler Endpoint, z. B. `https://api.openai.com/v1` oder lokal `http://localhost:11434/v1`), `AI_API_KEY`, `AI_MODEL` (z. B. `gpt-4o-mini` oder ein lokales Modell), `STORAGE_DIR`, `MAX_UPLOAD_MB`, `JWT_SECRET`, `CORS_ORIGINS`. Tests nutzen den Stub-LLM ohne diese KI-Variablen. Keine Secrets im Repo (`.gitignore`).
 
 ## 10. Build / Distribution / Deployment
 
