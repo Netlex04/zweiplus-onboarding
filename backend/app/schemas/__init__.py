@@ -4,6 +4,15 @@ Response models serialise with camelCase aliases to match the OpenAPI contract;
 populated by Python attribute name internally.
 """
 
+from app.schemas.ai import (
+    AiChatRequest,
+    AiChatResponse,
+    AiSuggestionOut,
+    AiSuggestRequest,
+    AiValidateRequest,
+    AiValidationResultOut,
+    AnalyzeDocumentRequest,
+)
 from app.schemas.auth import LoginRequest, LoginResponse
 from app.schemas.common import CamelModel, ErrorResponse
 from app.schemas.definitions import (
@@ -56,4 +65,11 @@ __all__ = [
     "ValidationWarning",
     "FileUploadOut",
     "TemplateOut",
+    "AiChatRequest",
+    "AiChatResponse",
+    "AiSuggestRequest",
+    "AiSuggestionOut",
+    "AiValidateRequest",
+    "AiValidationResultOut",
+    "AnalyzeDocumentRequest",
 ]
