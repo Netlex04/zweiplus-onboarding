@@ -1,6 +1,7 @@
 """API routers registry."""
 
 from app.api import (
+    ai,
     auth,
     definitions,
     modules,
@@ -18,6 +19,7 @@ ROUTERS = [
     steps.router,
     uploads.router,
     templates.router,
+    ai.router,
 ]
 
 __all__ = ["ROUTERS"]

@@ -11,16 +11,18 @@ def test_settings_defaults(monkeypatch):
     # Clear env so defaults are exercised deterministically.
     for var in (
         "DATABASE_URL",
-        "AI_PROVIDER",
-        "ANTHROPIC_MODEL",
+        "AI_BASE_URL",
+        "AI_MODEL",
+        "AI_USE_STUB",
         "MAX_UPLOAD_MB",
         "CORS_ORIGINS",
     ):
         monkeypatch.delenv(var, raising=False)
     settings = Settings(_env_file=None)
     assert settings.database_url.startswith("sqlite")
-    assert settings.ai_provider == "fake"
-    assert settings.anthropic_model == "claude-opus-4-8"
+    assert settings.ai_base_url.startswith("http")
+    assert settings.ai_model == "gpt-4o-mini"
+    assert settings.ai_use_stub is False
     assert settings.max_upload_mb == 10
     assert settings.cors_origins == ["http://localhost:5173"]
     assert settings.is_sqlite is True

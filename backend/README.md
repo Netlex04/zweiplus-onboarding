@@ -4,7 +4,9 @@ FastAPI + SQLAlchemy 2.x + Alembic backend for the modular privacy onboarding
 platform. **Phase 1:** data model, persistence, configuration, idempotent seeds.
 **Phase 2:** REST API (auth, processes/dashboard, modules, steps, uploads,
 templates), the module engine (unlock/progress/state machine) and the binding
-backend validation service. AI and review follow in later phases.
+backend validation service. **Phase 3:** AI service (`/api/ai/*`) — contextual
+chat, structured suggestions, semantic validation and document analysis via
+LangChain against any OpenAI-compatible endpoint. Review follows in later phases.
 
 ## Stack
 
@@ -28,9 +30,10 @@ All settings come from the environment (see `.env.example`, Architektur §9):
 | Variable | Default | Purpose |
 |----------|---------|---------|
 | `DATABASE_URL` | `sqlite:///./zweiplus.db` | Postgres at runtime, SQLite for tests |
-| `AI_PROVIDER` | `fake` | `fake` (no secret) or `anthropic` |
-| `ANTHROPIC_API_KEY` | – | only for `AI_PROVIDER=anthropic` |
-| `ANTHROPIC_MODEL` | `claude-opus-4-8` | model id |
+| `AI_BASE_URL` | `http://localhost:11434/v1` | OpenAI-compatible chat endpoint (OpenAI or local Ollama/LM Studio/vLLM) |
+| `AI_API_KEY` | `not-needed` | API key; any non-empty value for keyless local endpoints |
+| `AI_MODEL` | `gpt-4o-mini` | model id (or a local model name) |
+| `AI_USE_STUB` | `0` | `1` forces the deterministic offline stub LLM (local smoke, no key/server) |
 | `STORAGE_DIR` | `./storage` | local file storage |
 | `MAX_UPLOAD_MB` | `10` | upload size limit |
 | `JWT_SECRET` | dev placeholder | auth (used from Phase 2) |
@@ -133,6 +136,25 @@ Bearer-token auth (HS256 JWT signed with `JWT_SECRET`). Log in, then send
 
 Upload whitelist (Annahme A6): `pdf, docx, xlsx, png, jpg, jpeg`, max `MAX_UPLOAD_MB`.
 
+### AI endpoints (Phase 3)
+
+All require auth. Backed by the `AiProvider` seam (LangChain `ChatOpenAI` against
+`AI_BASE_URL`). Structured output is validated against a Pydantic schema before
+persistence; suggestions always carry `requiresReview=true` (KI writes nothing
+final — FR-AI-007).
+
+| Method & path | Request (camelCase) | Response |
+|---------------|---------------------|----------|
+| `POST /api/ai/chat` | `{context, contextRef?, message, history[]}` | `{reply}` |
+| `POST /api/ai/suggest` | `{stepInstanceId?, questionKey?}` | `AiSuggestion` (persisted) |
+| `POST /api/ai/validate` | `{stepInstanceId}` | `AiValidationResult` (persisted) |
+| `POST /api/ai/analyze-document` | `{uploadId}` | `AiSuggestion` with `sourceUploadId` (persisted) |
+
+`context` ∈ `dashboard|module|step|question`. The system prompt cascades the
+module → step → question knowledge config (`ai_knowledge_config` /
+`knowledge_scope`) into the matching `KnowledgeEntry` contents. For a local,
+key-free smoke run set `AI_USE_STUB=1` (deterministic offline stub LLM).
+
 ### Quick start (fresh SQLite)
 
 ```bash
@@ -166,4 +188,11 @@ from app.services import step_service            # save_answers, complete_step
 from app.services.statemachine import (          # legal-transition enforcement
     assert_step_transition, assert_module_transition, IllegalTransition)
 from app.providers.storage import FileStorage, LocalFileStorage, get_storage
+
+# Phase 3 AI seam + services (reusable by Phase 4/6):
+from app.providers.ai import (                   # AI provider seam
+    AiProvider, LangChainAiProvider, get_ai_provider)
+from app.providers.ai_stub import StubChatModel  # deterministic offline LLM for tests
+from app.services import ai_context              # build_system_prompt, gather_answer_context
+from app.services import ai_service              # run_chat/suggest/validate/analyze_document
 ```
