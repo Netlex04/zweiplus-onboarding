@@ -155,6 +155,56 @@ module → step → question knowledge config (`ai_knowledge_config` /
 `knowledge_scope`) into the matching `KnowledgeEntry` contents. For a local,
 key-free smoke run set `AI_USE_STUB=1` (deterministic offline stub LLM).
 
+### Review, Canonical & Import endpoints (Phase 4)
+
+Review + import/canonical endpoints are **reviewer/admin only** (`require_role`);
+a customer token gets `403`. Import is gated to released modules (FR-REV-003):
+canonical/preview/job creation only succeed once the module is `completed` /
+`import_ready` (review-approved), else `409`.
+
+| Method & path | Role | Request (camelCase) | Response |
+|---------------|------|---------------------|----------|
+| `GET  /api/review/tasks` | reviewer/admin | – | `ReviewTask[]` (open tasks; modules in `waiting_zweiplus` get a task lazily) |
+| `GET  /api/review/modules/{moduleInstanceId}` | reviewer/admin | – | `ReviewView` (steps → questions w/ answer+provenance, `aiSuggestions`, `aiValidation`, `backendValidation`) |
+| `PATCH /api/review/answers/{answerId}` | reviewer/admin | `{value}` | `Answer` (sets `source=manual`, re-validates step) |
+| `POST /api/review/modules/{moduleInstanceId}/approve` | reviewer/admin | – | `ModuleDetail` (module → `completed`, task → `approved`) |
+| `POST /api/review/modules/{moduleInstanceId}/request-changes` | reviewer/admin | `{notes?}` | `ModuleDetail` (module → `in_progress`, task → `changes_requested`) |
+| `POST /api/modules/{moduleInstanceId}/canonical` | reviewer/admin | – | `CanonicalOutput` (built by `output_schema_key`, idempotent) |
+| `POST /api/modules/{moduleInstanceId}/import-preview` | reviewer/admin | `{targetSystem=dpms_v1}` | `ImportPreview` (sets module `import_ready`) |
+| `POST /api/import-jobs` | reviewer/admin | `{moduleInstanceId, targetSystem=dpms_v1}` | `ImportJob` (201, `mapping_ready`) |
+| `POST /api/import-jobs/{id}/run` | reviewer/admin | – | `ImportJob` (`imported` on success; module → `imported`) |
+
+**Canonical model** (`app/services/canonical.py`): target-system-independent dict
+keyed by the module's `output_schema_key`, containing `moduleKey`, `moduleName`,
+flat `answers` (visible+non-empty only), ordered `fields`
+(`{questionKey,label,type,value,source}`) and `steps`.
+
+**ImportJob state machine** (`assert_import_transition`, FR-INT-005):
+`not_prepared → mapping_ready → validated → approved → importing →
+(imported | import_failed)`; `imported → reimport_required`,
+`import_failed → mapping_ready|reimport_required`. Illegal jumps raise
+`IllegalTransition` (→ 409).
+
+#### `TargetAdapter` seam + DPMS target schema (`dpms_v1`)
+
+`app/providers/target.py` defines the `TargetAdapter` ABC
+(`map(canonical)->dict`, `preview(canonical)->ImportPreview`,
+`run_import(payload)->ImportResult`) and the `DpmsAdapter`; `get_target_adapter`
+is the registry. `run_import` is **simulated** (no real DPMS REST call; Annahme
+A4). The DPMS payload is `{"targetSystem":"dpms_v1","objects":[...]}` with three
+object kinds, each carrying `objectType`:
+
+| DPMS object (`objectType`) | Fields | Mapping rule (canonical → DPMS) |
+|----------------------------|--------|---------------------------------|
+| `softwareSystem` | `name` | one per entry in `used_software` |
+| `serviceProvider` | `category`, `hasDpa` | one per `processor_categories` entry; `hasDpa = (has_processors == "ja")` |
+| `processingActivity` | `name`, `thirdCountryTransfer`, `thirdCountryDetails?`, `securityMeasures?`, `encryption?` | aggregated: `third_country(_details)`, `access_control_measures`, `encryption_in_use` |
+
+Intentionally **unmapped** canonical fields (free text / uploads, surfaced in
+`ImportPreview.unmappedFields` + a warning): `additional_notes`,
+`backup_concept`, `avv_notes`, `software_contract_upload`, `avv_document_upload`.
+`preview()` also warns on third-country transfer without a stated legal basis.
+
 ### Quick start (fresh SQLite)
 
 ```bash

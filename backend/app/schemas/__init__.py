@@ -27,6 +27,19 @@ from app.schemas.process import (
     ModuleCard,
     ProcessSummary,
 )
+from app.schemas.review import (
+    CanonicalOutputOut,
+    CreateImportJobRequest,
+    ImportJobOut,
+    ImportPreviewOut,
+    ImportPreviewRequest,
+    PatchAnswerRequest,
+    RequestChangesRequest,
+    ReviewQuestion,
+    ReviewStep,
+    ReviewTaskOut,
+    ReviewView,
+)
 from app.schemas.step import (
     AnswerInput,
     AnswerOut,
@@ -72,4 +85,16 @@ __all__ = [
     "AiValidateRequest",
     "AiValidationResultOut",
     "AnalyzeDocumentRequest",
+    # Review + import/canonical
+    "ReviewTaskOut",
+    "ReviewView",
+    "ReviewStep",
+    "ReviewQuestion",
+    "PatchAnswerRequest",
+    "RequestChangesRequest",
+    "CanonicalOutputOut",
+    "ImportPreviewOut",
+    "ImportPreviewRequest",
+    "ImportJobOut",
+    "CreateImportJobRequest",
 ]

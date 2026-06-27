@@ -11,7 +11,7 @@ jumps. Later phases (review/import) consume the same machine for their stages.
 
 from __future__ import annotations
 
-from app.models.enums import ModuleStatus, StepStatus
+from app.models.enums import ImportStatus, ModuleStatus, StepStatus
 
 
 class IllegalTransition(Exception):
@@ -131,6 +131,44 @@ _MODULE_TRANSITIONS: dict[ModuleStatus, set[ModuleStatus]] = {
 }
 
 
+# ImportJob (Architektur §5.3, FR-INT-005):
+# not_prepared -> mapping_ready -> validated -> approved -> importing ->
+# (imported | import_failed). import_failed / reimport_required re-enter the
+# pipeline at mapping_ready.
+_IMPORT_TRANSITIONS: dict[ImportStatus, set[ImportStatus]] = {
+    ImportStatus.NOT_PREPARED: {
+        ImportStatus.MAPPING_READY,
+    },
+    ImportStatus.MAPPING_READY: {
+        ImportStatus.VALIDATED,
+        ImportStatus.IMPORT_FAILED,
+    },
+    ImportStatus.VALIDATED: {
+        ImportStatus.APPROVED,
+        ImportStatus.MAPPING_READY,
+        ImportStatus.IMPORT_FAILED,
+    },
+    ImportStatus.APPROVED: {
+        ImportStatus.IMPORTING,
+        ImportStatus.IMPORT_FAILED,
+    },
+    ImportStatus.IMPORTING: {
+        ImportStatus.IMPORTED,
+        ImportStatus.IMPORT_FAILED,
+    },
+    ImportStatus.IMPORTED: {
+        ImportStatus.REIMPORT_REQUIRED,
+    },
+    ImportStatus.IMPORT_FAILED: {
+        ImportStatus.MAPPING_READY,
+        ImportStatus.REIMPORT_REQUIRED,
+    },
+    ImportStatus.REIMPORT_REQUIRED: {
+        ImportStatus.MAPPING_READY,
+    },
+}
+
+
 def _coerce(value: object, enum_cls):
     if isinstance(value, enum_cls):
         return value
@@ -151,6 +189,20 @@ def module_can_transition(current: object, target: object) -> bool:
     if current == target:
         return True
     return target in _MODULE_TRANSITIONS.get(current, set())
+
+
+def import_can_transition(current: object, target: object) -> bool:
+    current = _coerce(current, ImportStatus)
+    target = _coerce(target, ImportStatus)
+    if current == target:
+        return True
+    return target in _IMPORT_TRANSITIONS.get(current, set())
+
+
+def assert_import_transition(current: object, target: object) -> None:
+    if not import_can_transition(current, target):
+        raise IllegalTransition(str(_coerce(current, ImportStatus).value),
+                                str(_coerce(target, ImportStatus).value), "import")
 
 
 def assert_step_transition(current: object, target: object) -> None:

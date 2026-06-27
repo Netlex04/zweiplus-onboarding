@@ -78,13 +78,15 @@ Sechs Phasen, die nahtlos ineinandergreifen. Jede Phase wird von einem eigenen S
 **Ziel:** Zweiplus-Review, kanonischer Output, Zielsystem-Mapping + Importvorschau/-status.
 **Voraussetzungen:** P2 (Statemachine/Validierung), P3 (AiSuggestion).
 
+**Status:** ✅ abgeschlossen (`feat/phase-4-review-import`, in den Phase-6-Branch integriert).
+
 **Arbeitspakete:**
-- [ ] `GET /api/review/tasks`, `GET /api/review/modules/{id}` (Antworten+KI-Vorschläge+KI-/Backend-Validierungen+Herkunft), `PATCH /api/review/answers/{id}` (Reviewer-Edit), `POST …/approve`, `POST …/request-changes`.
-- [ ] Canonical-Output-Service: `ModuleInstance` → `CanonicalOutput` nach `output_schema_key` (FR-INT-001).
-- [ ] `TargetAdapter`-ABC + `DpmsAdapter`: Mapping canonical→DPMS-JSON (FR-INT-003), `preview()` (gemappt/ungemappt/Warnungen/Fehler FR-INT-004), `run_import()` simuliert.
-- [ ] `POST /api/modules/{id}/canonical`, `POST /api/modules/{id}/import-preview`, `POST /api/import-jobs`, `POST /api/import-jobs/{id}/run`; `ImportJob`-Statemachine (Architektur §5.3, FR-INT-005/006).
-- [ ] Freigabe-Gate: Import erst nach Review-`approved` (FR-REV-003).
-- [ ] Tests: Review-Übergänge, Gate, Canonical-Schema, DPMS-Mapping + Preview (gemappt/ungemappt), Importstatus-Maschine.
+- [x] `GET /api/review/tasks`, `GET /api/review/modules/{id}` (Antworten+KI-Vorschläge+KI-/Backend-Validierungen+Herkunft), `PATCH /api/review/answers/{id}` (Reviewer-Edit), `POST …/approve`, `POST …/request-changes`.
+- [x] Canonical-Output-Service: `ModuleInstance` → `CanonicalOutput` nach `output_schema_key` (FR-INT-001).
+- [x] `TargetAdapter`-ABC + `DpmsAdapter`: Mapping canonical→DPMS-JSON (FR-INT-003), `preview()` (gemappt/ungemappt/Warnungen/Fehler FR-INT-004), `run_import()` simuliert.
+- [x] `POST /api/modules/{id}/canonical`, `POST /api/modules/{id}/import-preview`, `POST /api/import-jobs`, `POST /api/import-jobs/{id}/run`; `ImportJob`-Statemachine (Architektur §5.3, FR-INT-005/006).
+- [x] Freigabe-Gate: Import erst nach Review-`approved` (FR-REV-003).
+- [x] Tests: Review-Übergänge, Gate, Canonical-Schema, DPMS-Mapping + Preview (gemappt/ungemappt), Importstatus-Maschine.
 
 **Schnittstellenvertrag → Phase 6:** Review- & Import-Endpunkte + DTOs für Review-Screen.
 **DoD:** `pytest` grün; Smoke: Modul complete→Review approve→Canonical→Importvorschau→ImportJob run→`imported`. Deckt FR-REV, FR-INT, §8.9/§8.10.
@@ -118,17 +120,20 @@ Sechs Phasen, die nahtlos ineinandergreifen. Jede Phase wird von einem eigenen S
 **Ziel:** Vollständige Bearbeitung + Review im Browser.
 **Voraussetzungen:** P5.
 
+**Status:** ✅ abgeschlossen (`feat/phase-6-frontend-module-review`).
+
 **Arbeitspakete:**
-- [ ] Modul-Start (§9.3): Intro, Vorlagen, Start/Fortsetzen.
-- [ ] Modul-Bearbeitung (§9.4): Step-Navigation (abgehakt), Progressbalken, dynamische Felder für **single_select/multi_select/text/file_upload**, Sichtbarkeitslogik, Validierungshinweise, Speichern/Weiter.
-- [ ] KI-Hilfe je Frage (`/ai/suggest`,`/ai/chat` context=question) + Step-/Modul-Hilfe; Vorschläge übernehmbar (Herkunft sichtbar).
-- [ ] Vorlagen im Step (§9.5): E-Mail anzeigen/kopieren, Fragebogen-Download, Begleittext.
-- [ ] Upload-Komponente (Dropzone, Typ/Größe) gegen `/api/uploads`.
-- [ ] Review-Screen (§9.6, reviewer-Rolle): Antworten, KI-Vorschläge, KI-/Backend-Validierungen, Editieren, Freigabe/Rückgabe, Importvorschau + Import auslösen.
-- [ ] Browser-Verifikation (agent-browser): kompletter Kundenfluss + Reviewer-Fluss.
+- [x] Modul-Start (§9.3): Intro (Ziel/Warum/Wer/Aufwand/Explainer), Status-Pill, Progressbalken, Step-Liste (abgehakt), Vorlagen, Start/Fortsetzen, Modul-KI (`ModulePage`).
+- [x] Modul-Bearbeitung (§9.4): Step-Navigation (abgehakt), Progressbalken, dynamische Felder für **single_select/multi_select/text/file_upload** (`QuestionField`), Sichtbarkeitslogik (Re-Fetch nach Speichern), Validierungshinweise inline, Speichern/Abschließen (409-Hinweis), `StepPage`.
+- [x] KI-Hilfe je Frage (`/ai/suggest`, `/ai/chat` context=question) + Step-/Modul-Hilfe; Vorschläge übernehmbar (Herkunfts-Badge); Prüf-KI (`/ai/validate`).
+- [x] Vorlagen im Step/Modul (§9.5): E-Mail anzeigen/kopieren, Fragebogen-Download (authentifiziert via Blob), Begleittext (`TemplateList`).
+- [x] Upload-Komponente (Dropzone, Typ/Größe clientseitig, 415/413) gegen `/api/uploads`.
+- [x] Review-Screen (§9.6, reviewer/admin): Antworten + Herkunft, KI-Vorschläge, KI-/Backend-Validierungen, Editieren (`PATCH`), Freigabe/Rückgabe, DPMS-Importvorschau + Import (`ReviewListPage`, `ReviewDetailPage`, `ImportPanel`).
+- [x] Browser-Verifikation (agent-browser): kompletter Kundenfluss (4 Antworttypen, Upload, Sichtbarkeit, KI-Vorschlag, Vorlagen, Modulabschluss → Folge-Module freigeschaltet) + Reviewer-Fluss (Antwort editieren → Freigabe → Importvorschau → Import `imported`).
+- [x] Tests (Vitest + RTL): Fragefeld-Rendering je Typ, multi/single-Werte, Inline-Validierung, complete-409, KI-Vorschlag-Übernahme + Badge, Vorlage Kopieren/Download, Review-Render/Patch/Approve/Request-Changes, Importvorschau + Import-Flow (47 Tests grün, P5 inklusive).
 
 **Schnittstellenvertrag → Abschluss:** vollständige UI gegen alle Akzeptanzkriterien.
-**DoD:** End-to-End im Browser grün; alle 4 Antworttypen, KI-Hilfe, Vorlagen, Upload, Review, Importvorschau funktionieren. Deckt §9.3–9.6, FR-Q-002…006, FR-TPL-004, FR-REV, FR-INT-004.
+**DoD:** ✅ End-to-End im Browser grün; alle 4 Antworttypen, KI-Hilfe, Vorlagen, Upload, Review, Importvorschau funktionieren. Deckt §9.3–9.6, FR-Q-002…006, FR-TPL-004, FR-REV, FR-INT-004.
 
 ---
 

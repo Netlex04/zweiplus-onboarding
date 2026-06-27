@@ -2,11 +2,13 @@
 
 import pytest
 
-from app.models.enums import ModuleStatus, StepStatus
+from app.models.enums import ImportStatus, ModuleStatus, StepStatus
 from app.services.statemachine import (
     IllegalTransition,
+    assert_import_transition,
     assert_module_transition,
     assert_step_transition,
+    import_can_transition,
     module_can_transition,
     step_can_transition,
 )
@@ -38,6 +40,26 @@ def test_module_allowed_and_illegal():
     assert not module_can_transition(ModuleStatus.IMPORTED, ModuleStatus.AVAILABLE)
     with pytest.raises(IllegalTransition):
         assert_module_transition(ModuleStatus.LOCKED, ModuleStatus.COMPLETED)
+
+
+def test_import_allowed_chain_and_illegal():
+    assert import_can_transition(
+        ImportStatus.NOT_PREPARED, ImportStatus.MAPPING_READY
+    )
+    assert import_can_transition(ImportStatus.MAPPING_READY, ImportStatus.VALIDATED)
+    assert import_can_transition(ImportStatus.VALIDATED, ImportStatus.APPROVED)
+    assert import_can_transition(ImportStatus.APPROVED, ImportStatus.IMPORTING)
+    assert import_can_transition(ImportStatus.IMPORTING, ImportStatus.IMPORTED)
+    assert import_can_transition(ImportStatus.IMPORTING, ImportStatus.IMPORT_FAILED)
+    # illegal jumps
+    assert not import_can_transition(
+        ImportStatus.NOT_PREPARED, ImportStatus.IMPORTED
+    )
+    assert not import_can_transition(
+        ImportStatus.MAPPING_READY, ImportStatus.IMPORTING
+    )
+    with pytest.raises(IllegalTransition):
+        assert_import_transition(ImportStatus.IMPORTED, ImportStatus.APPROVED)
 
 
 def test_same_status_is_noop_allowed():

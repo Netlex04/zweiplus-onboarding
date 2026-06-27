@@ -156,6 +156,16 @@ class TargetAdapter(ABC):
 
 KI-Anbindung herstellerneutral: `LangChainAiProvider` spricht jede OpenAI-kompatible API (`AI_BASE_URL`). `Settings.storage` etc. analog.
 
+**DPMS-Zielschema (`dpms_v1`, Phase 4).** Der `DpmsAdapter` mappt das kanonische Modell (`app/services/canonical.py`: `output_schema_key` + flache `answers` + geordnete `fields`) auf ein DPMS-kompatibles JSON `{"targetSystem":"dpms_v1","objects":[...]}`. Jedes Objekt trägt `objectType` zur Dispatch-Unterscheidung:
+
+| `objectType` | Felder | Mapping-Regel (kanonisch → DPMS) |
+|--------------|--------|----------------------------------|
+| `softwareSystem` | `name` | je Eintrag in `used_software` |
+| `serviceProvider` | `category`, `hasDpa` | je `processor_categories`-Eintrag; `hasDpa = (has_processors == "ja")` |
+| `processingActivity` | `name`, `thirdCountryTransfer`, `thirdCountryDetails?`, `securityMeasures?`, `encryption?` | aggregiert aus `third_country(_details)`, `access_control_measures`, `encryption_in_use` |
+
+Bewusst **nicht gemappte** Felder (Freitext/Uploads, in `ImportPreview.unmappedFields` + Warnung): `additional_notes`, `backup_concept`, `avv_notes`, `software_contract_upload`, `avv_document_upload`. `run_import` ist simuliert (kein echter REST-Call, Annahme A4). ImportJob-Statemachine (FR-INT-005): `not_prepared → mapping_ready → validated → approved → importing → (imported | import_failed)` (`assert_import_transition`).
+
 ## 8. KI-Konzept (technisch)
 
 - **Kontexte**: `dashboard | module | step | question | validation`. Jeder Request liefert seinen Kontext + Referenz-IDs.
